@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="main_btn_back">#FFFFFF</color>
-    <color name="main_back">#3772E7</color>
+    <color name="main_back">#1A1B22</color>
     <color name="main_btn_text">#000000</color>
     <color name="main_text">#FFFFFF</color>
-    <color name="settings_text">#000000</color>
-    <color name="settings_back">#FFFFFF</color>
+    <color name="settings_text">#FFFFFF</color>
+    <color name="settings_back">#1A1B22</color>
 </resources>
