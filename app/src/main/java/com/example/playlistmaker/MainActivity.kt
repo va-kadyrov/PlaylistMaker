@@ -16,14 +16,10 @@ class MainActivity : AppCompatActivity() {
         val btnMedia = findViewById<Button>(R.id.btn_media)
         val btnSettings = findViewById<Button>(R.id.btn_settings)
 
-        val btnClickListener: View.OnClickListener = object : View.OnClickListener {
-            override fun onClick(v: View?){
-                val searchIntent = Intent(this@MainActivity, SearchActivity::class.java)
-                startActivity(searchIntent)
-            }
+        btnSearch.setOnClickListener {
+            val searchIntent = Intent(this, SearchActivity::class.java)
+            startActivity(searchIntent)
         }
-
-        btnSearch.setOnClickListener(btnClickListener)
 
         btnMedia.setOnClickListener{
             val mediaIntent = Intent(this, MediaActivity::class.java)

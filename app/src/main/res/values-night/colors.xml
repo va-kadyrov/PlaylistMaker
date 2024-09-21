@@ -6,4 +6,6 @@
     <color name="main_text">#FFFFFF</color>
     <color name="settings_text">#FFFFFF</color>
     <color name="settings_back">#1A1B22</color>
+    <color name="thumb">#3772E7</color>
+    <color name="tint">#9FBBF3</color>
 </resources>
