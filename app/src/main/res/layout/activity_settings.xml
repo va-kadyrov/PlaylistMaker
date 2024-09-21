@@ -5,102 +5,54 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/settings_back">
-    <LinearLayout
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/btn_back"
         android:layout_width="match_parent"
         android:layout_height="@dimen/small_btn_size"
-        android:orientation="horizontal"
         android:layout_marginBottom="16dp"
-        >
-        <Button
-            android:id="@+id/btn_back"
-            android:layout_width="@dimen/small_btn_size"
-            android:layout_height="@dimen/small_btn_size"
-            android:backgroundTint="@color/settings_back"
-            app:icon="@drawable/btn_back"
-            app:iconTint="@color/settings_text"
-            android:contentDescription="@string/btn_back"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/settings_header"
-            android:textColor="@color/settings_text"
-            android:textSize="@dimen/large_text"/>
-    </LinearLayout>
-    <LinearLayout
+        app:titleMarginStart="40dp"
+        app:logo="@drawable/btn_back"
+        app:title="@string/settings_header"
+        app:titleTextColor="@color/settings_text"
+        android:paddingHorizontal="@dimen/padding_horizontal"/>
+
+    <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_btn_height"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/padding_horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/middle_text"
-            android:textColor="@color/settings_text"
-            android:layout_gravity="center"
-            android:text="@string/btn_night_theme"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/btn_switch"/>
-    </LinearLayout>
-    <LinearLayout
+        android:text="@string/btn_night_theme"
+        android:textSize="@dimen/middle_text"
+        android:paddingHorizontal="@dimen/padding_horizontal"
+        app:thumbTint="@color/thumb"
+        app:trackTint="@color/tint"/>
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_btn_height"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/padding_horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/middle_text"
-            android:textColor="@color/settings_text"
-            android:layout_gravity="center"
-            android:text="@string/btn_share_app"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/btn_share"/>
-    </LinearLayout>
-    <LinearLayout
+        android:layout_gravity="center"
+        android:textSize="@dimen/middle_text"
+        android:textColor="@color/settings_text"
+        android:paddingHorizontal="@dimen/padding_horizontal"
+        android:gravity="center_vertical"
+        android:text="@string/btn_share_app"
+        app:drawableEndCompat="@drawable/btn_share"/>
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_btn_height"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/padding_horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/middle_text"
-            android:textColor="@color/settings_text"
-            android:layout_gravity="center"
-            android:text="@string/btn_write_support"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/btn_support"/>
-    </LinearLayout>
-    <LinearLayout
+        android:layout_gravity="center"
+        android:textSize="@dimen/middle_text"
+        android:textColor="@color/settings_text"
+        android:paddingHorizontal="@dimen/padding_horizontal"
+        android:gravity="center_vertical"
+        android:text="@string/btn_write_support"
+        app:drawableEndCompat="@drawable/btn_support"/>
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_btn_height"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/padding_horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/middle_text"
-            android:textColor="@color/settings_text"
-            android:layout_gravity="center"
-            android:text="@string/btn_user_agreement"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/btn_agreement"/>
-    </LinearLayout>
+        android:layout_gravity="center"
+        android:textSize="@dimen/middle_text"
+        android:textColor="@color/settings_text"
+        android:paddingHorizontal="@dimen/padding_horizontal"
+        android:gravity="center_vertical"
+        android:text="@string/btn_user_agreement"
+        app:drawableEndCompat="@drawable/btn_agreement"/>
 </LinearLayout>
