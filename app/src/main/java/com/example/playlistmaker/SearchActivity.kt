@@ -58,10 +58,10 @@ class SearchActivity : AppCompatActivity() {
         inputText = savedInstanceState.getString(INPUT_TEXT, "")
     }
 
+    var inputText = ""
+
     companion object {
         const val INPUT_TEXT = "INPUT_TEXT"
     }
-
-    var inputText = ""
 
 }
