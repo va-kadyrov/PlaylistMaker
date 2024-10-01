@@ -7,7 +7,7 @@
     android:background="@color/settings_back">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/btn_back"
+        android:id="@+id/settings_tb_back"
         android:layout_width="match_parent"
         android:layout_height="@dimen/small_btn_size"
         android:layout_marginBottom="16dp"
@@ -15,44 +15,35 @@
         app:logo="@drawable/btn_back"
         app:title="@string/settings_header"
         app:titleTextColor="@color/settings_text"
+        android:textSize="@dimen/large_text"
+        android:fontFamily="@font/ys_display_medium"
         android:paddingHorizontal="@dimen/padding_horizontal"/>
 
-    <androidx.appcompat.widget.SwitchCompat
+    <Switch
         android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_btn_height"
         android:text="@string/btn_night_theme"
-        android:textSize="@dimen/middle_text"
-        android:paddingHorizontal="@dimen/padding_horizontal"
+        style="@style/SettingsBtnStyle"
         app:thumbTint="@color/thumb"
         app:trackTint="@color/tint"/>
     <TextView
+        android:id="@+id/settings_tv_share"
+        style="@style/SettingsBtnStyle"
+        android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_btn_height"
-        android:layout_gravity="center"
-        android:textSize="@dimen/middle_text"
-        android:textColor="@color/settings_text"
-        android:paddingHorizontal="@dimen/padding_horizontal"
-        android:gravity="center_vertical"
         android:text="@string/btn_share_app"
         app:drawableEndCompat="@drawable/btn_share"/>
     <TextView
+        android:id="@+id/settings_tv_support"
+        style="@style/SettingsBtnStyle"
+        android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_btn_height"
-        android:layout_gravity="center"
-        android:textSize="@dimen/middle_text"
-        android:textColor="@color/settings_text"
-        android:paddingHorizontal="@dimen/padding_horizontal"
-        android:gravity="center_vertical"
         android:text="@string/btn_write_support"
         app:drawableEndCompat="@drawable/btn_support"/>
     <TextView
+        android:id="@+id/settings_tv_agreement"
+        style="@style/SettingsBtnStyle"
+        android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_btn_height"
-        android:layout_gravity="center"
-        android:textSize="@dimen/middle_text"
-        android:textColor="@color/settings_text"
-        android:paddingHorizontal="@dimen/padding_horizontal"
-        android:gravity="center_vertical"
         android:text="@string/btn_user_agreement"
         app:drawableEndCompat="@drawable/btn_agreement"/>
 </LinearLayout>

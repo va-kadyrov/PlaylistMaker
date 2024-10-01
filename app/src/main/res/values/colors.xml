@@ -8,4 +8,7 @@
     <color name="settings_back">#FFFFFF</color>
     <color name="thumb">#AEAFB4</color>
     <color name="tint">#E6E8EB</color>
+    <color name="search_text">#1A1B22</color>
+    <color name="search_ev_back">#E6E8EB</color>
+    <color name="search_btn_clear">#99A2AD</color>
 </resources>
