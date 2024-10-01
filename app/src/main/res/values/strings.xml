@@ -9,4 +9,10 @@
     <string name="btn_write_support">Написать в поддержку</string>
     <string name="btn_user_agreement">Пользовательское соглашение</string>
     <string name="btn_back">Назад</string>
+    <string name="ref_yandex_practicum_android">https://practicum.yandex.ru/android-developer</string>
+    <string name="ref_yandex_practicum">https://practicum.yandex.ru</string>
+    <string name="ref_yandex_practicum_offer">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="err_start_activity">"Не удалось запустить приложение для "</string>
+    <string name="search_header">Поиск</string>
+    <string name="search_hint">Поиск</string>
 </resources>
