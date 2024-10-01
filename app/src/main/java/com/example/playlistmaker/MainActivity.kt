@@ -12,9 +12,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnSearch = findViewById<Button>(R.id.btn_search)
-        val btnMedia = findViewById<Button>(R.id.btn_media)
-        val btnSettings = findViewById<Button>(R.id.btn_settings)
+        val btnSearch = findViewById<Button>(R.id.main_btn_search)
+        val btnMedia = findViewById<Button>(R.id.main_btn_media)
+        val btnSettings = findViewById<Button>(R.id.main_btn_settings)
 
         btnSearch.setOnClickListener {
             val searchIntent = Intent(this, SearchActivity::class.java)
