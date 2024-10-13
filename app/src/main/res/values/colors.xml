@@ -8,7 +8,10 @@
     <color name="settings_back">#FFFFFF</color>
     <color name="thumb">#AEAFB4</color>
     <color name="tint">#E6E8EB</color>
-    <color name="search_text">#1A1B22</color>
+    <color name="search_tb_text">#1A1B22</color>
+    <color name="search_btn_back">#1A1B22</color>
     <color name="search_ev_back">#E6E8EB</color>
     <color name="search_btn_clear">#99A2AD</color>
+    <color name="search_tracklist_name">#000000</color>
+    <color name="search_tracklist_text">#AEAFB4</color>
 </resources>
