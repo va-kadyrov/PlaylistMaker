@@ -11,34 +11,33 @@
         android:id="@+id/search_tb_back"
         android:layout_width="match_parent"
         android:layout_height="@dimen/small_btn_size"
-        android:layout_marginBottom="16dp"
         android:paddingHorizontal="@dimen/padding_horizontal"
         android:textSize="@dimen/large_text"
         android:fontFamily="@font/ys_display_medium"
         app:logo="@drawable/btn_back"
         app:title="@string/search_header"
         app:titleMarginStart="40dp"
-        app:titleTextColor="@color/search_text" />
+        app:titleTextColor="@color/search_btn_back" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/padding_horizontal">
+        android:padding="@dimen/padding_horizontal">
 
         <EditText
             android:id="@+id/search_et"
             android:layout_width="match_parent"
             android:layout_height="@dimen/small_btn_size"
             android:background="@drawable/search_et_back"
+            android:fontFamily="@font/ys_display_regular"
             android:hint="@string/search_hint"
             android:inputType="text"
             android:lines="1"
             android:paddingHorizontal="@dimen/padding_horizontal"
             android:paddingStart="48dp"
-            android:textSize="@dimen/middle_text"
-            android:fontFamily="@font/ys_display_regular"
-            android:textColorHint="@color/search_text"
-            android:textColor="@color/search_text"/>
+            android:textColor="@color/search_tb_text"
+            android:textColorHint="@color/search_tb_text"
+            android:textSize="@dimen/middle_text" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -58,5 +57,11 @@
             android:src="@drawable/search_clear" />
 
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_recView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
 </LinearLayout>
