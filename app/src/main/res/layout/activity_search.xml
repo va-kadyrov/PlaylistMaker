@@ -29,15 +29,15 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/small_btn_size"
             android:background="@drawable/search_et_back"
+            android:fontFamily="@font/ys_display_regular"
             android:hint="@string/search_hint"
             android:inputType="text"
             android:lines="1"
             android:paddingHorizontal="@dimen/padding_horizontal"
             android:paddingStart="48dp"
-            android:textSize="@dimen/middle_text"
-            android:fontFamily="@font/ys_display_regular"
-            android:textColorHint="#1A1B22"
-            android:textColor="#1A1B22"/>
+            android:textColor="@color/search_tb_text"
+            android:textColorHint="@color/search_tb_text"
+            android:textSize="@dimen/middle_text" />
 
         <ImageView
             android:layout_width="wrap_content"

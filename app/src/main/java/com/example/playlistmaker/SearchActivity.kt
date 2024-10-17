@@ -1,6 +1,5 @@
 package com.example.playlistmaker
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -15,6 +14,8 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +82,11 @@ class SearchActivity : AppCompatActivity() {
             authorView.text = track.artistName
             nameView.text = track.trackName
             timeView.text = track.trackTime
-            Glide.with(itemView).load(track.artworkUrl100).placeholder(R.drawable.track_empty_img).into(imgView)
+            Glide.with(itemView)
+                .load(track.artworkUrl100)
+                .transform(FitCenter(), RoundedCorners(6))
+                .placeholder(R.drawable.track_empty_img)
+                .into(imgView)
         }
     }
 
