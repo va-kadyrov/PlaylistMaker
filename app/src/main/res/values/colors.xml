@@ -14,4 +14,5 @@
     <color name="search_btn_clear">#99A2AD</color>
     <color name="search_tracklist_name">#000000</color>
     <color name="search_tracklist_text">#AEAFB4</color>
+    <color name="search_pl_text">#1A1B22</color>
 </resources>
