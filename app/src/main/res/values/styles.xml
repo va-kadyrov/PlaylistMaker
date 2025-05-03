@@ -23,7 +23,7 @@
     <style name="ReloadBtnStyle">
         <item name="android:layout_height">@dimen/small_btn_size</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:background">@color/search_pl_text</item>
+        <item name="android:backgroundTint">@color/search_pl_text</item>
         <item name="android:textSize">@dimen/little_text</item>
         <item name="android:textColor">@color/settings_back</item>
         <item name="android:paddingHorizontal">@dimen/padding_horizontal</item>

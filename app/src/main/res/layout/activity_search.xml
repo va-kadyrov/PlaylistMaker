@@ -72,13 +72,14 @@
         android:id="@+id/search_nothing_found"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="48dp"
         android:visibility="gone"
         android:orientation="vertical">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="16dp"
+            android:paddingBottom="16dp"
             android:src="@drawable/nothing_found"/>
 
         <TextView
@@ -96,6 +97,7 @@
         android:id="@+id/search_network_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="48dp"
         android:visibility="gone"
         android:orientation="vertical">
 
@@ -117,12 +119,10 @@
 
         <Button
             android:id="@+id/search_btn_reload"
+            style="@style/ReloadBtnStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:background="@color/search_pl_text"
-            android:fontFamily="@font/ys_display_medium"
-            android:textSize="14sp"
             android:text="@string/btn_reload">
         </Button>
 
