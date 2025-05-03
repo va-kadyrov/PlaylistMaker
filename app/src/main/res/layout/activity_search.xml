@@ -22,12 +22,15 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_horizontal">
+        android:padding="@dimen/padding_horizontal"
+        android:id="@+id/search_edit_frame">
 
         <EditText
             android:id="@+id/search_et"
             android:layout_width="match_parent"
             android:layout_height="@dimen/small_btn_size"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:background="@drawable/search_et_back"
             android:fontFamily="@font/ys_display_regular"
             android:hint="@string/search_hint"
@@ -62,6 +65,67 @@
         android:id="@+id/search_recView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    <LinearLayout
+        android:id="@+id/search_nothing_found"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="16dp"
+            android:src="@drawable/nothing_found"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="@dimen/big_text"
+            android:textColor="@color/search_pl_text"
+            android:text="@string/nothing_found"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/search_network_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="16dp"
+            android:src="@drawable/network_error"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:gravity="center"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="@dimen/big_text"
+            android:textColor="@color/search_pl_text"
+            android:text="@string/network_error"/>
+
+        <Button
+            android:id="@+id/search_btn_reload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/search_pl_text"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="14sp"
+            android:text="@string/btn_reload">
+        </Button>
+
+    </LinearLayout>
 
 </LinearLayout>
