@@ -1,10 +1,7 @@
 package com.example.playlistmaker
 
 import TrackResponse
-import android.content.ContentValues.TAG
 import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
-import android.icu.util.GregorianCalendar
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -17,6 +14,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -26,22 +24,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.gson.GsonBuilder
-import com.google.gson.TypeAdapter
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
-import java.sql.Time
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Date
-import java.util.Locale
-import kotlin.time.Duration
+
 
 class SearchActivity : AppCompatActivity() {
 
@@ -56,6 +46,7 @@ class SearchActivity : AppCompatActivity() {
         val inputEditText = findViewById<EditText>(R.id.search_et)
         val btnClear = findViewById<ImageView>(R.id.search_btn_clear)
         val btnBack = findViewById<Toolbar>(R.id.search_tb_back)
+        val btnReload = findViewById<Button>(R.id.search_btn_reload)
         val recView = findViewById<RecyclerView>(R.id.search_recView)
 
         recView.adapter = tracksAdapter
@@ -82,6 +73,8 @@ class SearchActivity : AppCompatActivity() {
 
         btnClear.setOnClickListener {
             inputEditText.setText("")
+            tracks.clear()
+            tracksAdapter.notifyDataSetChanged()
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
         }
@@ -90,12 +83,15 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
+        btnReload.setOnClickListener {
+            loadTracks(lastQuery)
+        }
+
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loadTracks()
-
+                loadTracks(inputText)
             }
             false
         }
@@ -109,11 +105,11 @@ class SearchActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle){
         super.onRestoreInstanceState(savedInstanceState)
         inputText = savedInstanceState.getString(INPUT_TEXT, "")
-        loadTracks()
+        loadTracks(inputText)
     }
 
-    fun loadTracks() {
-        tracksApiService.getTracks("song", inputText).enqueue(object : Callback<TrackResponse> {
+    fun loadTracks(searchString: String) {
+        tracksApiService.getTracks("song", searchString).enqueue(object : Callback<TrackResponse> {
             override fun onResponse(
                 call: Call<TrackResponse>,
                 response: Response<TrackResponse>
@@ -128,6 +124,7 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     val errorJson = response.errorBody()?.string()
                     tracks.clear()
+                    lastQuery = searchString
                     Log.e(TAG, "errorJson $errorJson")
                     showNetworkError()
                 }
@@ -136,8 +133,10 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
                 t.printStackTrace()
-                showNetworkError()
+                tracks.clear()
+                lastQuery = searchString
                 Log.e(TAG, "tracks loading error: ${t.message}")
+                showNetworkError()
             }
         })
     }
@@ -161,6 +160,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     var inputText = ""
+    var lastQuery = ""
     val tracks = mutableListOf<Track>()
     val tracksAdapter = TracksAdapter(tracks)
 
