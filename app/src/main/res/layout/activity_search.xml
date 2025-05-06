@@ -69,10 +69,49 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     <LinearLayout
+        android:id="@+id/search_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="12dp"
+            android:gravity="center"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="@dimen/big_text"
+            android:textColor="@color/search_pl_text"
+            android:text="@string/title_search_history"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_history_recView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <Button
+            android:id="@+id/search_btn_clear_history"
+            style="@style/ReloadBtnStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:layout_marginVertical="12dp"
+            android:paddingVertical="12dp"
+            android:textSize="@dimen/little_text"
+            android:text="@string/btn_clear_history">
+        </Button>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/search_nothing_found"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="48dp"
+        android:paddingVertical="12dp"
         android:visibility="gone"
         android:orientation="vertical">
 
@@ -97,8 +136,8 @@
         android:id="@+id/search_network_error"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="48dp"
-        android:visibility="gone"
+        android:paddingVertical="12dp"
+        android:visibility="visible"
         android:orientation="vertical">
 
         <ImageView
@@ -123,6 +162,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textSize="@dimen/little_text"
             android:text="@string/btn_reload">
         </Button>
 

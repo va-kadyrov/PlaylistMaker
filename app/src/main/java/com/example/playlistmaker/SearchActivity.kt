@@ -48,8 +48,20 @@ class SearchActivity : AppCompatActivity() {
         val btnBack = findViewById<Toolbar>(R.id.search_tb_back)
         val btnReload = findViewById<Button>(R.id.search_btn_reload)
         val recView = findViewById<RecyclerView>(R.id.search_recView)
+        val btnClearHistory = findViewById<Button>(R.id.search_btn_clear_history)
+        val recHistory = findViewById<RecyclerView>(R.id.search_history_recView)
+        val sharedPreference = getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
 
         recView.adapter = tracksAdapter
+
+        searchHistory.sharedPreference = sharedPreference
+        searchHistory.loadTracks()
+        recHistory.adapter = searchHistoryAdapter
+        searchHistoryAdapter.notifyDataSetChanged()
+
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (inputText.isNullOrEmpty() && inputEditText.hasFocus() && searchHistory.tracks.size > 0) showHistory()
+        }
 
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -68,6 +80,12 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     inputText = ""
                 }
+                if (inputText.isNullOrEmpty() && inputEditText.hasFocus() && searchHistory.tracks.size > 0) {
+                    showHistory()
+                    searchHistoryAdapter.notifyDataSetChanged()
+                } else {
+                    showTracks()
+                }
             }
         }
 
@@ -77,6 +95,12 @@ class SearchActivity : AppCompatActivity() {
             tracksAdapter.notifyDataSetChanged()
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+        }
+
+        btnClearHistory.setOnClickListener{
+            searchHistory.clearTracks()
+            searchHistoryAdapter.notifyDataSetChanged()
+            showTracks()
         }
 
         btnBack.setOnClickListener {
@@ -143,18 +167,28 @@ class SearchActivity : AppCompatActivity() {
 
     fun showTracks(){
         findViewById<RecyclerView>(R.id.search_recView).visibility = VISIBLE
+        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
+    }
+
+    fun showHistory(){
+        findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_history).visibility = VISIBLE
         findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
         findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
     }
 
     fun showNothingFound(){
         findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
         findViewById<LinearLayout>(R.id.search_nothing_found).visibility = VISIBLE
         findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
     }
 
     fun showNetworkError(){
         findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
         findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
         findViewById<LinearLayout>(R.id.search_network_error).visibility = VISIBLE
     }
@@ -162,7 +196,9 @@ class SearchActivity : AppCompatActivity() {
     var inputText = ""
     var lastQuery = ""
     val tracks = mutableListOf<Track>()
+    val searchHistory = SearchHistory()
     val tracksAdapter = TracksAdapter(tracks)
+    val searchHistoryAdapter = TracksAdapter(searchHistory.tracks)
 
     class TracksViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val authorView: TextView = itemView.findViewById(R.id.search_rec_track_author)
@@ -170,6 +206,7 @@ class SearchActivity : AppCompatActivity() {
         private val timeView: TextView = itemView.findViewById(R.id.search_rec_track_time)
         private val imgView: ImageView = itemView.findViewById(R.id.search_rec_img)
         private val timeFormat = SimpleDateFormat("mm:ss")
+
         fun bind(track: Track) {
             authorView.text = track.artistName
             nameView.text = track.trackName
@@ -182,21 +219,26 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    class TracksAdapter(private val tracks: List<Track>): RecyclerView.Adapter<TracksViewHolder> () {
+    inner class TracksAdapter(private val items: List<Track>): RecyclerView.Adapter<TracksViewHolder> () {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.search_recycler_layout, parent, false)
             return TracksViewHolder(view)
         }
         override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
-            holder.bind(tracks[position])
+            holder.bind(items[position])
+            holder.itemView.setOnClickListener{
+                searchHistory.addTrack(items[position])
+            }
+
         }
         override fun getItemCount(): Int {
-            return tracks.size
+            return items.size
         }
     }
 
     companion object {
         const val INPUT_TEXT = "INPUT_TEXT"
         const val TAG = "myLog"
+        const val PM_SHARED_PREFERENCES = "PM_SHARED_PREFERENCES"
         const val I_TUNES_URL = "https://itunes.apple.com"}
 }

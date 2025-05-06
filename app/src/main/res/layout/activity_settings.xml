@@ -20,8 +20,9 @@
         android:paddingHorizontal="@dimen/padding_horizontal"/>
 
     <Switch
-        android:layout_width="match_parent"
+        android:id="@+id/settings_swt_theme"
         android:text="@string/btn_night_theme"
+        android:layout_width="match_parent"
         style="@style/SettingsBtnStyle"
         app:thumbTint="@color/thumb"
         app:trackTint="@color/tint"/>
