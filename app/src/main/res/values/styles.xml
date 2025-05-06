@@ -12,6 +12,7 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
     <style name="SettingsBtnStyle">
+        <item name="android:textAllCaps">false</item>
         <item name="android:layout_height">@dimen/small_btn_size</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:textSize">@dimen/middle_text</item>
@@ -21,6 +22,7 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
     <style name="ReloadBtnStyle">
+        <item name="android:textAllCaps">false</item>
         <item name="android:layout_height">@dimen/small_btn_size</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:backgroundTint">@color/search_pl_text</item>

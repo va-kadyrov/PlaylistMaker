@@ -4,9 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import com.example.playlistmaker.SearchActivity.Companion.PM_SHARED_PREFERENCES
+
+const val DARK_THEME = "DARK_THEME"
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,6 +21,10 @@ class SettingsActivity : AppCompatActivity() {
         val btnShare = findViewById<TextView>(R.id.settings_tv_share)
         val btnSupport = findViewById<TextView>(R.id.settings_tv_support)
         val btnAgreement = findViewById<TextView>(R.id.settings_tv_agreement)
+        val swtTheme = findViewById<Switch>(R.id.settings_swt_theme)
+        val sharedPreference = getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
+
+        swtTheme.isChecked = sharedPreference.getBoolean(DARK_THEME, false)
 
         btnBack.setOnClickListener{
             this.finish()
@@ -49,7 +57,11 @@ class SettingsActivity : AppCompatActivity() {
             }catch(e: Exception){
                 Toast.makeText(this, "${getString(R.string.err_start_activity)} открытия веб-страницы: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+        }
 
+        swtTheme.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            sharedPreference.edit().putBoolean(DARK_THEME, checked).apply()
         }
 
     }
