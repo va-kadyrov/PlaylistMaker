@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import TrackResponse
+import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Callback
@@ -42,6 +44,8 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        playerIntent = Intent(this, PlayerActivity::class.java)
 
         val inputEditText = findViewById<EditText>(R.id.search_et)
         val btnClear = findViewById<ImageView>(R.id.search_btn_clear)
@@ -197,8 +201,9 @@ class SearchActivity : AppCompatActivity() {
     var lastQuery = ""
     val tracks = mutableListOf<Track>()
     val searchHistory = SearchHistory()
-    val tracksAdapter = TracksAdapter(tracks)
-    val searchHistoryAdapter = TracksAdapter(searchHistory.tracks)
+    val tracksAdapter = TracksAdapter(tracks, false)
+    val searchHistoryAdapter = TracksAdapter(searchHistory.tracks, true)
+    lateinit var playerIntent: Intent
 
     class TracksViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val authorView: TextView = itemView.findViewById(R.id.search_rec_track_author)
@@ -219,20 +224,29 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    inner class TracksAdapter(private val items: List<Track>): RecyclerView.Adapter<TracksViewHolder> () {
+    inner class TracksAdapter(private val items: List<Track>, private val isHistory: Boolean): RecyclerView.Adapter<TracksViewHolder> () {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.search_recycler_layout, parent, false)
             return TracksViewHolder(view)
         }
         override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
             holder.bind(items[position])
-            holder.itemView.setOnClickListener{
-                searchHistory.addTrack(items[position])
+            holder.itemView.setOnClickListener  {
+                if (!isHistory) {
+                    searchHistory.addTrack(items[position])
+                }
+                openPlayer(items[position])
             }
 
         }
         override fun getItemCount(): Int {
             return items.size
+        }
+
+        fun openPlayer(track: Track){
+            val json = Gson().toJson(track)
+            playerIntent.putExtra("track", json);
+            startActivity(playerIntent)
         }
     }
 

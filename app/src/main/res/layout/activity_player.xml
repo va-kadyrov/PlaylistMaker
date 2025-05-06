@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PlayerActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/player_tb_back"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/small_btn_size"
+        android:paddingHorizontal="@dimen/padding_horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="@dimen/large_text"
+        android:fontFamily="@font/ys_display_medium"
+        app:logo="@drawable/btn_back"
+        app:title="@string/player_header"
+        app:titleMarginStart="40dp"
+        app:titleTextColor="@color/search_btn_back" />
+
+    <ImageView
+        android:id="@+id/player_albumCover"
+        android:layout_width="312dp"
+        android:layout_height="312dp"
+        android:layout_marginVertical="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_tb_back"
+        android:scaleType="fitCenter"
+        android:src="@drawable/album_cover_empty"/>
+
+    <TextView
+        android:id="@+id/player_trackName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_albumCover"
+        android:layout_marginStart="40dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:textSize="@dimen/large_text"
+        android:textColor="@color/search_pl_text"
+        android:text="Название трека"/>
+
+    <TextView
+        android:id="@+id/player_artistName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_trackName"
+        android:layout_marginStart="40dp"
+        android:layout_marginVertical="16dp"
+        android:fontFamily="@font/ys_display_medium"
+        android:textSize="@dimen/little_text"
+        android:textColor="@color/search_pl_text"
+        android:text="Исполнитель"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/player_btn_addTrack"
+        android:layout_width="51dp"
+        android:layout_height="51dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_artistName"
+        app:layout_constraintBottom_toTopOf="@+id/player_trackTime_title"
+        android:layout_marginStart="40dp"
+        android:background="@drawable/btn_add_track">
+    </androidx.appcompat.widget.AppCompatButton>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/player_btn_play"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_artistName"
+        app:layout_constraintBottom_toTopOf="@+id/player_trackTime_title"
+        android:layout_margin="16dp"
+        android:background="@drawable/btn_play_track">
+    </androidx.appcompat.widget.AppCompatButton>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/player_btn_like"
+        android:layout_width="51dp"
+        android:layout_height="51dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_artistName"
+        app:layout_constraintBottom_toTopOf="@+id/player_trackTime_title"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/btn_like_track">
+    </androidx.appcompat.widget.AppCompatButton>
+
+    <TextView
+        android:id="@+id/player_playing_progress"
+        android:layout_marginTop="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_btn_play"
+        android:fontFamily="@font/ys_display_medium"
+        android:textSize="@dimen/little_text"
+        android:textColor="@color/search_pl_text"
+        android:text="0:00"/>
+
+
+    <TextView
+        android:id="@+id/player_trackTime_title"
+        style="@style/PlayerGrayLittleText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_collectionName_title"
+        android:layout_weight="0"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/track_time_title"/>
+
+    <TextView
+        android:id="@+id/player_trackTime"
+        style="@style/PlayerBlackLittleText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_collectionName_title"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="5:35"/>
+
+
+    <TextView
+        android:id="@+id/player_collectionName_title"
+        style="@style/PlayerGrayLittleText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_releaseDate_title"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        android:singleLine="true"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/collection_name_title"/>
+
+    <TextView
+        android:id="@+id/player_collectionName"
+        style="@style/PlayerBlackLittleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_releaseDate_title"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="Название альбома"/>
+
+    <TextView
+        android:id="@+id/player_releaseDate_title"
+        style="@style/PlayerGrayLittleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_genre_title"
+        android:layout_weight="0"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/release_date_title"/>
+
+    <TextView
+        android:id="@+id/player_releaseDate"
+        style="@style/PlayerBlackLittleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_genre_title"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="Год выпуска"/>
+
+
+    <TextView
+        android:id="@+id/player_genre_title"
+        style="@style/PlayerGrayLittleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_country_title"
+        android:layout_weight="0"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/genre_title"/>
+
+    <TextView
+        android:id="@+id/player_genre"
+        style="@style/PlayerBlackLittleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_country_title"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="Жанр трека"/>
+
+
+    <TextView
+        android:id="@+id/player_country_title"
+        style="@style/PlayerGrayLittleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_weight="0"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="@string/country_title"/>
+
+    <TextView
+        android:id="@+id/player_country"
+        style="@style/PlayerBlackLittleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:layout_marginVertical="12dp"
+        android:layout_marginHorizontal="16dp"
+        android:text="Страна происхождения трека"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
