@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/settings_back"
     tools:context=".PlayerActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -22,23 +23,31 @@
 
     <ImageView
         android:id="@+id/player_albumCover"
-        android:layout_width="312dp"
-        android:layout_height="312dp"
-        android:layout_marginVertical="24dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/player_tb_back"
-        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/player_trackName"
         android:src="@drawable/album_cover_empty"/>
 
     <TextView
         android:id="@+id/player_trackName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_albumCover"
-        android:layout_marginStart="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/player_artistName"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constrainedWidth="true"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:fontFamily="@font/ys_display_medium"
         android:textSize="@dimen/large_text"
         android:textColor="@color/search_pl_text"
@@ -49,9 +58,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_trackName"
-        android:layout_marginStart="40dp"
-        android:layout_marginVertical="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/player_btn_play"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="30dp"
         android:fontFamily="@font/ys_display_medium"
         android:textSize="@dimen/little_text"
         android:textColor="@color/search_pl_text"
@@ -62,9 +71,9 @@
         android:layout_width="51dp"
         android:layout_height="51dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_artistName"
-        app:layout_constraintBottom_toTopOf="@+id/player_trackTime_title"
-        android:layout_marginStart="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/player_playing_progress"
+        android:layout_marginBottom="28dp"
+        android:layout_marginStart="24dp"
         android:background="@drawable/btn_add_track">
     </androidx.appcompat.widget.AppCompatButton>
 
@@ -74,9 +83,8 @@
         android:layout_height="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_artistName"
-        app:layout_constraintBottom_toTopOf="@+id/player_trackTime_title"
-        android:layout_margin="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/player_playing_progress"
+        android:layout_marginBottom="4dp"
         android:background="@drawable/btn_play_track">
     </androidx.appcompat.widget.AppCompatButton>
 
@@ -85,9 +93,9 @@
         android:layout_width="51dp"
         android:layout_height="51dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_artistName"
-        app:layout_constraintBottom_toTopOf="@+id/player_trackTime_title"
-        android:layout_marginEnd="40dp"
+        app:layout_constraintBottom_toTopOf="@+id/player_playing_progress"
+        android:layout_marginBottom="28dp"
+        android:layout_marginEnd="24dp"
         android:background="@drawable/btn_like_track">
     </androidx.appcompat.widget.AppCompatButton>
 
@@ -98,7 +106,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_btn_play"
+        app:layout_constraintBottom_toTopOf="@+id/player_trackTime_title"
+        android:layout_marginBottom="30dp"
         android:fontFamily="@font/ys_display_medium"
         android:textSize="@dimen/little_text"
         android:textColor="@color/search_pl_text"
@@ -138,7 +147,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/player_releaseDate_title"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
         android:singleLine="true"
         android:layout_marginVertical="12dp"
         android:layout_marginHorizontal="16dp"
@@ -152,7 +160,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/player_releaseDate_title"
         app:layout_constrainedWidth="true"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintWidth_max="250dp"
         android:ellipsize="end"
         android:singleLine="true"
         android:layout_marginVertical="12dp"
