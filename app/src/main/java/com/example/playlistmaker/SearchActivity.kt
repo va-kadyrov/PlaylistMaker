@@ -41,6 +41,8 @@ class SearchActivity : AppCompatActivity() {
 
     private val tracksApiService = retrofit.create<TracksApiService>()
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -136,7 +138,11 @@ class SearchActivity : AppCompatActivity() {
         loadTracks(inputText)
     }
 
-    fun loadTracks(searchString: String) {
+    private fun searchDebounce() {
+        //handler.removeCallbacks()
+    }
+
+    private fun loadTracks(searchString: String) {
         tracksApiService.getTracks("song", searchString).enqueue(object : Callback<TrackResponse> {
             override fun onResponse(
                 call: Call<TrackResponse>,
@@ -254,5 +260,6 @@ class SearchActivity : AppCompatActivity() {
         const val INPUT_TEXT = "INPUT_TEXT"
         const val TAG = "myLog"
         const val PM_SHARED_PREFERENCES = "PM_SHARED_PREFERENCES"
-        const val I_TUNES_URL = "https://itunes.apple.com"}
+        const val I_TUNES_URL = "https://itunes.apple.com"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L}
 }
