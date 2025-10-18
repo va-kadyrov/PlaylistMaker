@@ -5,6 +5,8 @@ import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -19,6 +21,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
@@ -38,10 +41,11 @@ import java.util.Date
 class SearchActivity : AppCompatActivity() {
 
     private val retrofit = Retrofit.Builder().baseUrl(I_TUNES_URL).addConverterFactory(GsonConverterFactory.create()).build()
-
     private val tracksApiService = retrofit.create<TracksApiService>()
-
-
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable {searchTracks() }
+    private lateinit var inputEditText: EditText
+    private var isClickAllowed = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
 
         playerIntent = Intent(this, PlayerActivity::class.java)
 
-        val inputEditText = findViewById<EditText>(R.id.search_et)
+        inputEditText = findViewById<EditText>(R.id.search_et)
         val btnClear = findViewById<ImageView>(R.id.search_btn_clear)
         val btnBack = findViewById<Toolbar>(R.id.search_tb_back)
         val btnReload = findViewById<Button>(R.id.search_btn_reload)
@@ -77,6 +81,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.isNullOrEmpty()) btnClear.visibility = View.INVISIBLE
                 else btnClear.visibility = View.VISIBLE
+                searchDebounce()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -139,10 +144,21 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchDebounce() {
-        //handler.removeCallbacks()
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 
     private fun loadTracks(searchString: String) {
+        showProgressBar()
         tracksApiService.getTracks("song", searchString).enqueue(object : Callback<TrackResponse> {
             override fun onResponse(
                 call: Call<TrackResponse>,
@@ -175,11 +191,18 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
+    private fun searchTracks() {
+        if (inputEditText.text.isNotEmpty()) {
+            loadTracks(inputEditText.text.toString())
+        }
+    }
+
     fun showTracks(){
         findViewById<RecyclerView>(R.id.search_recView).visibility = VISIBLE
         findViewById<LinearLayout>(R.id.search_history).visibility = GONE
         findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
         findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
+        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
     }
 
     fun showHistory(){
@@ -187,6 +210,7 @@ class SearchActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.search_history).visibility = VISIBLE
         findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
         findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
+        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
     }
 
     fun showNothingFound(){
@@ -194,6 +218,7 @@ class SearchActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.search_history).visibility = GONE
         findViewById<LinearLayout>(R.id.search_nothing_found).visibility = VISIBLE
         findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
+        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
     }
 
     fun showNetworkError(){
@@ -201,6 +226,15 @@ class SearchActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.search_history).visibility = GONE
         findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
         findViewById<LinearLayout>(R.id.search_network_error).visibility = VISIBLE
+        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
+    }
+
+    fun showProgressBar(){
+        findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
+        findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
+        findViewById<ProgressBar>(R.id.progressBar).visibility = VISIBLE
     }
 
     var inputText = ""
@@ -236,12 +270,14 @@ class SearchActivity : AppCompatActivity() {
             return TracksViewHolder(view)
         }
         override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
-            holder.bind(items[position])
-            holder.itemView.setOnClickListener  {
-                if (!isHistory) {
-                    searchHistory.addTrack(items[position])
+            if (clickDebounce()) {
+                holder.bind(items[position])
+                holder.itemView.setOnClickListener {
+                    if (!isHistory) {
+                        searchHistory.addTrack(items[position])
+                    }
+                    openPlayer(items[position])
                 }
-                openPlayer(items[position])
             }
 
         }
@@ -261,5 +297,6 @@ class SearchActivity : AppCompatActivity() {
         const val TAG = "myLog"
         const val PM_SHARED_PREFERENCES = "PM_SHARED_PREFERENCES"
         const val I_TUNES_URL = "https://itunes.apple.com"
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L}
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L}
 }
