@@ -28,7 +28,7 @@ class PlayerActivity : AppCompatActivity() {
 
         val json = intent.getStringExtra("track")
         val track = Gson().fromJson(json, Track::class.java)
-        val timeFormat = SimpleDateFormat("mm:ss")
+       // val timeFormat = SimpleDateFormat("mm:ss")
         val yearFormat = SimpleDateFormat("YYYY")
 
         val player_trackName = findViewById<TextView>(R.id.player_trackName)
@@ -93,7 +93,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnPlay : Button
     private lateinit var plaingProgress: TextView
     private val handler = Handler(Looper.getMainLooper())
-
+    private val timeFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private val trackTimer = object : Runnable{
         override fun run() {
             setPlaingProgress()
@@ -148,7 +148,7 @@ class PlayerActivity : AppCompatActivity() {
             currentPosition = mediaPlayer.currentPosition }
         else {
             currentPosition = 0 }
-        plaingProgress.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+        plaingProgress.text = timeFormat.format(currentPosition)
         Log.d(TAG, "setting plaingProgress.text =  ${plaingProgress.text}")
     }
 

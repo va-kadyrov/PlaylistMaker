@@ -132,6 +132,11 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+    }
+
     override fun onSaveInstanceState(outState: Bundle){
         super.onSaveInstanceState(outState)
         outState.putString(INPUT_TEXT, inputText)
@@ -270,16 +275,15 @@ class SearchActivity : AppCompatActivity() {
             return TracksViewHolder(view)
         }
         override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
-            if (clickDebounce()) {
-                holder.bind(items[position])
-                holder.itemView.setOnClickListener {
+            holder.bind(items[position])
+            holder.itemView.setOnClickListener {
+                if (clickDebounce()) {
                     if (!isHistory) {
                         searchHistory.addTrack(items[position])
                     }
                     openPlayer(items[position])
                 }
             }
-
         }
         override fun getItemCount(): Int {
             return items.size
