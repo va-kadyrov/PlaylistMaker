@@ -11,4 +11,5 @@ class Track (
     val primaryGenreName: String,
     val country: String,
     val artworkUrl100: String,
-    val trackId: Long)
+    val trackId: Long,
+    val previewUrl: String)
