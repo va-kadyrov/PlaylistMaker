@@ -1,6 +1,5 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui
 
-import TrackResponse
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
@@ -28,30 +27,40 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.Creator
 import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Callback
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import java.util.Date
-
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.Track
+import com.example.playlistmaker.domain.api.TracksConsumer
+import com.example.playlistmaker.domain.api.TracksHistoryInteractor
+import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.App.Companion.PM_SHARED_PREFERENCES
 
 class SearchActivity : AppCompatActivity() {
 
-    private val retrofit = Retrofit.Builder().baseUrl(I_TUNES_URL).addConverterFactory(GsonConverterFactory.create()).build()
-    private val tracksApiService = retrofit.create<TracksApiService>()
-    private val handler = Handler(Looper.getMainLooper())
+    val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable {searchTracks() }
     private lateinit var inputEditText: EditText
     private var isClickAllowed = true
+    private lateinit var tracksInteractor: TracksInteractor
+    private lateinit var tracksHistoryInteractor: TracksHistoryInteractor
+
+    var inputText = ""
+    var lastQuery = ""
+    val tracks = mutableListOf<Track>()
+    val tracksHistory = mutableListOf<Track>()
+    val tracksAdapter = TracksAdapter(tracks, false)
+    val searchHistoryAdapter = TracksAdapter(tracksHistory, true)
+    lateinit var playerIntent: Intent
+//    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
         playerIntent = Intent(this, PlayerActivity::class.java)
+        val sharedPreferences = getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
 
         inputEditText = findViewById<EditText>(R.id.search_et)
         val btnClear = findViewById<ImageView>(R.id.search_btn_clear)
@@ -60,17 +69,16 @@ class SearchActivity : AppCompatActivity() {
         val recView = findViewById<RecyclerView>(R.id.search_recView)
         val btnClearHistory = findViewById<Button>(R.id.search_btn_clear_history)
         val recHistory = findViewById<RecyclerView>(R.id.search_history_recView)
-        val sharedPreference = getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
+
+        tracksInteractor = Creator.provideTracksInteractor()
+        tracksHistoryInteractor = Creator.provideTracksHistoryInteractor(sharedPreferences)
 
         recView.adapter = tracksAdapter
-
-        searchHistory.sharedPreference = sharedPreference
-        searchHistory.loadTracks()
         recHistory.adapter = searchHistoryAdapter
-        searchHistoryAdapter.notifyDataSetChanged()
 
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
-            if (inputText.isNullOrEmpty() && inputEditText.hasFocus() && searchHistory.tracks.size > 0) showHistory()
+            if (inputText.isNullOrEmpty() && inputEditText.hasFocus())
+                tracksHistoryInteractor.loadTracks(TracksConsumerHistory())
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -91,9 +99,8 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     inputText = ""
                 }
-                if (inputText.isNullOrEmpty() && inputEditText.hasFocus() && searchHistory.tracks.size > 0) {
-                    showHistory()
-                    searchHistoryAdapter.notifyDataSetChanged()
+                if (inputText.isNullOrEmpty() && inputEditText.hasFocus()) {
+                    tracksHistoryInteractor.loadTracks(TracksConsumerHistory())
                 } else {
                     showTracks()
                 }
@@ -109,8 +116,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         btnClearHistory.setOnClickListener{
-            searchHistory.clearTracks()
-            searchHistoryAdapter.notifyDataSetChanged()
+            tracksHistoryInteractor.clearTracks(TracksConsumerHistory())
             showTracks()
         }
 
@@ -130,6 +136,7 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
+
     }
 
     override fun onDestroy() {
@@ -162,38 +169,10 @@ class SearchActivity : AppCompatActivity() {
         return current
     }
 
-    private fun loadTracks(searchString: String) {
+    private fun loadTracks(searchString : String) {
+        handler.removeCallbacks(searchRunnable)
         showProgressBar()
-        tracksApiService.getTracks("song", searchString).enqueue(object : Callback<TrackResponse> {
-            override fun onResponse(
-                call: Call<TrackResponse>,
-                response: Response<TrackResponse>
-            ) {
-                Log.d(TAG, "response.isSuccessful ${response.isSuccessful}")
-                if (response.isSuccessful) {
-                    tracks.clear()
-                    tracks.addAll(response.body()!!.results)
-                    if (tracks.size > 0) showTracks()
-                    else showNothingFound()
-                    Log.d(TAG, "response.body()!!.resultCount ${response.body()!!.resultCount}")
-                } else {
-                    val errorJson = response.errorBody()?.string()
-                    tracks.clear()
-                    lastQuery = searchString
-                    Log.e(TAG, "errorJson $errorJson")
-                    showNetworkError()
-                }
-                tracksAdapter.notifyDataSetChanged()
-            }
-
-            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                t.printStackTrace()
-                tracks.clear()
-                lastQuery = searchString
-                Log.e(TAG, "tracks loading error: ${t.message}")
-                showNetworkError()
-            }
-        })
+        tracksInteractor.loadTracks(searchString, TracksConsumerMain())
     }
 
     private fun searchTracks() {
@@ -242,14 +221,6 @@ class SearchActivity : AppCompatActivity() {
         findViewById<ProgressBar>(R.id.progressBar).visibility = VISIBLE
     }
 
-    var inputText = ""
-    var lastQuery = ""
-    val tracks = mutableListOf<Track>()
-    val searchHistory = SearchHistory()
-    val tracksAdapter = TracksAdapter(tracks, false)
-    val searchHistoryAdapter = TracksAdapter(searchHistory.tracks, true)
-    lateinit var playerIntent: Intent
-
     class TracksViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val authorView: TextView = itemView.findViewById(R.id.search_rec_track_author)
         private val nameView: TextView = itemView.findViewById(R.id.search_rec_track_name)
@@ -279,7 +250,11 @@ class SearchActivity : AppCompatActivity() {
             holder.itemView.setOnClickListener {
                 if (clickDebounce()) {
                     if (!isHistory) {
-                        searchHistory.addTrack(items[position])
+                        tracksHistoryInteractor.addTrack(items[position],
+                            { loadedTracks -> {
+                                tracksHistory.clear()
+                                tracksHistory.addAll(loadedTracks)
+                                searchHistoryAdapter.notifyDataSetChanged()}})
                     }
                     openPlayer(items[position])
                 }
@@ -296,11 +271,37 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    inner class TracksConsumerMain : TracksConsumer {
+        override fun consume(loadedTracks: List<Track>) {
+            if (loadedTracks.size > 0) handler.post{showTracks()}
+            else handler.post{showNothingFound()}
+            tracks.clear()
+            tracks.addAll(loadedTracks)
+            handler.post{tracksAdapter.notifyDataSetChanged()}
+            Log.d(TAG, "loadedTracks.size ${loadedTracks.size}")
+        }
+    }
+
+    inner class TracksConsumerHistory : TracksConsumer {
+        override fun consume(loadedTracks: List<Track>) {
+            tracksHistory.clear()
+            tracksHistory.addAll(loadedTracks)
+            searchHistoryAdapter.notifyDataSetChanged()
+//            tracksHistoryInteractor.loadTracks(TracksConsumerHistory())
+            if (loadedTracks.size > 0) {
+                handler.post{showHistory()}
+            } else {
+                showTracks()
+            }
+            Log.d(TAG, "loadedTracksHistory.size ${loadedTracks.size}")
+        }
+    }
+
     companion object {
         const val INPUT_TEXT = "INPUT_TEXT"
         const val TAG = "myLog"
-        const val PM_SHARED_PREFERENCES = "PM_SHARED_PREFERENCES"
-        const val I_TUNES_URL = "https://itunes.apple.com"
+//        const val PM_SHARED_PREFERENCES = "PM_SHARED_PREFERENCES"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private const val CLICK_DEBOUNCE_DELAY = 1000L}
 }
+

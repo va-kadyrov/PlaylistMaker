@@ -1,25 +1,25 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui
 
-import android.icu.text.SimpleDateFormat
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.Button
+import android.widget.TextView
+import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.ConstraintSet.GONE
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.SearchActivity.Companion.TAG
 import com.google.gson.Gson
+import android.icu.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.Track
 
 class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,5 +158,6 @@ class PlayerActivity : AppCompatActivity() {
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
         private const val MP_REQUEST_INTERVAL = 333L
+        private const val TAG = "myLog"
     }
 }

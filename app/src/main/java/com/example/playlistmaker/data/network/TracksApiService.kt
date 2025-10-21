@@ -1,6 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.network
 
-import TrackResponse
+import com.example.playlistmaker.data.dto.TracksSearchResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -10,5 +10,5 @@ interface TracksApiService {
     fun getTracks(
         @Query("entity") song: String,
         @Query("term", encoded = false) searchString: String,
-    ): Call<TrackResponse>
+    ): Call<TracksSearchResponse>
 }

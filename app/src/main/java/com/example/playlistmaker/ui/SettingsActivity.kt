@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -8,9 +8,10 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import com.example.playlistmaker.SearchActivity.Companion.PM_SHARED_PREFERENCES
-
-const val DARK_THEME = "DARK_THEME"
+import com.example.playlistmaker.App
+import com.example.playlistmaker.R
+import com.example.playlistmaker.App.Companion.PM_SHARED_PREFERENCES
+import com.example.playlistmaker.Creator.provideDarkThemeInteractor
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,8 +24,9 @@ class SettingsActivity : AppCompatActivity() {
         val btnAgreement = findViewById<TextView>(R.id.settings_tv_agreement)
         val swtTheme = findViewById<Switch>(R.id.settings_swt_theme)
         val sharedPreference = getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
+        val darkThemeInteractor = provideDarkThemeInteractor(sharedPreference)
 
-        swtTheme.isChecked = sharedPreference.getBoolean(DARK_THEME, false)
+        swtTheme.isChecked = darkThemeInteractor.get()
 
         btnBack.setOnClickListener{
             this.finish()
@@ -61,7 +63,7 @@ class SettingsActivity : AppCompatActivity() {
 
         swtTheme.setOnCheckedChangeListener { switcher, checked ->
             (applicationContext as App).switchTheme(checked)
-            sharedPreference.edit().putBoolean(DARK_THEME, checked).apply()
+            darkThemeInteractor.set(checked)
         }
 
     }
