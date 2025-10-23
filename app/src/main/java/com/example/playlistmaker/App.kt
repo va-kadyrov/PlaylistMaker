@@ -2,16 +2,18 @@ package com.example.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.SearchActivity.Companion.PM_SHARED_PREFERENCES
+import com.example.playlistmaker.Creator.provideDarkThemeInteractor
 
-class App : Application () {
+class App : Application() {
 
     var darkTheme = false
 
     override fun onCreate() {
         super.onCreate()
         val sharedPreference = getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
-        darkTheme = sharedPreference.getBoolean(DARK_THEME, false)
+        val darkThemeInteractor = provideDarkThemeInteractor(sharedPreference)
+
+        darkTheme = darkThemeInteractor.get()
         switchTheme(darkTheme)
     }
 
@@ -24,5 +26,8 @@ class App : Application () {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
+    }
+    companion object {
+        const val PM_SHARED_PREFERENCES = "PM_SHARED_PREFERENCES"
     }
 }
