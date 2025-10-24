@@ -1,6 +1,6 @@
 package com.example.playlistmaker.creator
 
-import android.content.SharedPreferences
+import android.content.Context
 import com.example.playlistmaker.search.data.TracksHistoryRepositoryImpl
 import com.example.playlistmaker.search.data.TracksRepositoryImpl
 import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -20,24 +20,24 @@ object Creator {
         return TracksRepositoryImpl(RetrofitNetworkClient())
     }
 
-    private fun getTracksHistoryRepository(sharedPreferences: SharedPreferences): TracksHistoryRepository {
-        return TracksHistoryRepositoryImpl(sharedPreferences)
+    private fun getTracksHistoryRepository(context: Context): TracksHistoryRepository {
+        return TracksHistoryRepositoryImpl(context)
     }
 
-    private fun getPropBooleanRepository(sharedPreferences: SharedPreferences): PropBooleanRepository {
-        return PropBooleanRepositoryImpl(sharedPreferences)
+    private fun getPropBooleanRepository(context: Context): PropBooleanRepository {
+        return PropBooleanRepositoryImpl(context)
     }
 
     fun provideTracksInteractor(): TracksInteractor {
         return TracksInteractorImpl(getTracksRepository())
     }
 
-    fun provideTracksHistoryInteractor(sharedPreferences: SharedPreferences): TracksHistoryInteractor {
-        return TracksHistoryInteractorImpl(getTracksHistoryRepository(sharedPreferences))
+    fun provideTracksHistoryInteractor(context: Context): TracksHistoryInteractor {
+        return TracksHistoryInteractorImpl(getTracksHistoryRepository(context))
     }
 
-    fun provideDarkThemeInteractor(sharedPreferences: SharedPreferences): DarkThemeInteractor {
-        return DarkThemeInteractorImpl(getPropBooleanRepository(sharedPreferences))
+    fun provideDarkThemeInteractor(context: Context): DarkThemeInteractor {
+        return DarkThemeInteractorImpl(getPropBooleanRepository(context))
     }
 
 }

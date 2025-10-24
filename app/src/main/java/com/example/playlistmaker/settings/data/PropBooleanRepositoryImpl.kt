@@ -1,10 +1,15 @@
 package com.example.playlistmaker.settings.data
 
-import android.content.SharedPreferences
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import com.example.playlistmaker.main.ui.App.Companion.PM_SHARED_PREFERENCES
 import com.example.playlistmaker.settings.domain.api.PropBooleanRepository
 
-class PropBooleanRepositoryImpl(private val sharedPreference: SharedPreferences):
+class PropBooleanRepositoryImpl(private val context: Context):
     PropBooleanRepository {
+
+    val sharedPreference = context.getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
+
     override fun get(propName: String): Boolean {
         return sharedPreference.getBoolean(propName, false)
     }

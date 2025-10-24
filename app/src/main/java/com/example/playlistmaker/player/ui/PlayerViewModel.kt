@@ -51,11 +51,9 @@ class PlayerViewModel: ViewModel() {
         mediaPlayer.setDataSource(trackUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-//            btnPlay.isEnabled = true
             playerState.postValue(STATE_PREPARED)
         }
         mediaPlayer.setOnCompletionListener {
-//            btnPlay.setBackgroundResource(R.drawable.btn_play_track)
             playerState.postValue(STATE_PREPARED)
             setPlaingProgress()
             handler.removeCallbacks { trackTimer }

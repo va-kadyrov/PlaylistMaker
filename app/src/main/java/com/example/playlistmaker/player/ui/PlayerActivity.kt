@@ -1,10 +1,6 @@
 package com.example.playlistmaker.player.ui
 
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
@@ -47,7 +43,6 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
         viewModel.observeTrackTimerState().observe(this) {
-//            swtTheme.isChecked = it
             plaingProgress.text = it
         }
 
@@ -112,7 +107,6 @@ class PlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.playerDestroy()
-//        handler.removeCallbacks { trackTimer }
     }
 
     private lateinit var btnPlay : Button

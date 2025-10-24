@@ -1,7 +1,6 @@
 package com.example.playlistmaker.search.ui
 
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
@@ -10,19 +9,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.App.Companion.PM_SHARED_PREFERENCES
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.api.TracksConsumer
 
 class SearchViewModel(context: Context): ViewModel() {
 
-    val sharedPreferences = context.getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
-
     val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable {searchTracksRunnable() }
     private val tracksInteractor = Creator.provideTracksInteractor()
-    private val tracksHistoryInteractor = Creator.provideTracksHistoryInteractor(sharedPreferences)
+    private val tracksHistoryInteractor = Creator.provideTracksHistoryInteractor(context)
 
     private var searchString = ""
     private var lastQuery = ""

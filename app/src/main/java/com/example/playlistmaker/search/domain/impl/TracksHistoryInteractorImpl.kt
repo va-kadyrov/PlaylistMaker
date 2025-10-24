@@ -5,6 +5,8 @@ import com.example.playlistmaker.search.domain.api.TracksConsumer
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksHistoryRepository
 
+const val MAX_HISTORY_SIZE = 10
+
 class TracksHistoryInteractorImpl(private val repository: TracksHistoryRepository) :
     TracksHistoryInteractor {
 
@@ -21,7 +23,7 @@ class TracksHistoryInteractorImpl(private val repository: TracksHistoryRepositor
         val tracks = repository.loadTracks().toMutableList()
         for (eachTrack in tracks) if (eachTrack.trackId == track.trackId) tracks.remove(eachTrack)
         tracks.add(0, track)
-        if (tracks.size > 10) tracks.removeAt(tracks.size-1)
+        if (tracks.size > MAX_HISTORY_SIZE) tracks.removeAt(tracks.size - 1)
         repository.saveTracks(tracks)
     }
 }

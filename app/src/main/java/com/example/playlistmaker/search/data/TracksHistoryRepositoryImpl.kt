@@ -1,12 +1,16 @@
 package com.example.playlistmaker.search.data
 
-import android.content.SharedPreferences
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import com.example.playlistmaker.main.ui.App.Companion.PM_SHARED_PREFERENCES
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.api.TracksHistoryRepository
 import com.google.gson.Gson
 
-class TracksHistoryRepositoryImpl (private val sharedPreference: SharedPreferences) :
+class TracksHistoryRepositoryImpl (private val context: Context) :
     TracksHistoryRepository {
+
+    val sharedPreference = context.getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
 
     override fun loadTracks(): List<Track> {
         try{

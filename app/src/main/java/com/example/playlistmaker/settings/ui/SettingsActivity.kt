@@ -7,7 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.App
+import com.example.playlistmaker.main.ui.App
 import com.example.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {

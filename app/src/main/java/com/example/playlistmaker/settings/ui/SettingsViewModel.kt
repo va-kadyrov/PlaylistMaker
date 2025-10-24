@@ -1,25 +1,20 @@
 package com.example.playlistmaker.settings.ui
 
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.App.Companion.PM_SHARED_PREFERENCES
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.R
 
 class SettingsViewModel (private val context: Context): ViewModel() {
 
-    private val sharedPreferences = context.getSharedPreferences(PM_SHARED_PREFERENCES, MODE_PRIVATE)
-    private val darkThemeInteractor = Creator.provideDarkThemeInteractor(sharedPreferences)
+    private val darkThemeInteractor = Creator.provideDarkThemeInteractor(context)
 
     private val darkThemeState = MutableLiveData<Boolean>()
     fun observeDarkTheme(): LiveData<Boolean> = darkThemeState
@@ -50,7 +45,10 @@ class SettingsViewModel (private val context: Context): ViewModel() {
     fun support() {
         val supportIntent = Intent(Intent.ACTION_SENDTO)
         supportIntent.data = Uri.parse("mailto:")
-        supportIntent.putExtra("EXTRA_TEXT", context.getString(R.string.ref_yandex_practicum))
+        supportIntent.putExtra(Intent.EXTRA_EMAIL, context.getString(R.string.share_email))
+        supportIntent.putExtra(Intent.EXTRA_TITLE, context.getString(R.string.share_title))
+        supportIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_message))
+        context.startActivity(supportIntent)
         try {
             context.startActivity(supportIntent)
         } catch (e: Exception) {
