@@ -2,7 +2,11 @@ package com.example.playlistmaker.main.ui
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.creator.Creator.provideDarkThemeInteractor
+import com.example.playlistmaker.di.*
+import com.example.playlistmaker.settings.domain.api.DarkThemeInteractor
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class App : Application() {
 
@@ -10,7 +14,12 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val darkThemeInteractor = provideDarkThemeInteractor(getApplicationContext())
+
+        startKoin {
+            androidContext(this@App)
+            modules(dataModule, domainModule, viewModelModule)
+        }
+        val darkThemeInteractor : DarkThemeInteractor by inject()
 
         darkTheme = darkThemeInteractor.get()
         switchTheme(darkTheme)
@@ -25,8 +34,5 @@ class App : Application() {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-    }
-    companion object {
-        const val PM_SHARED_PREFERENCES = "PM_SHARED_PREFERENCES"
     }
 }

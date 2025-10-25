@@ -12,21 +12,20 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import android.icu.text.SimpleDateFormat
-import androidx.lifecycle.ViewModelProvider
 import java.util.Date
 import java.util.Locale
 import com.example.playlistmaker.R
 import com.example.playlistmaker.search.domain.Track
+import org.koin.android.ext.android.inject
 
 class PlayerActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: PlayerViewModel
+    private val viewModel: PlayerViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory()).get(PlayerViewModel::class.java)
         viewModel.observePlayerState().observe(this){
             when(it) {
                 STATE_DEFAULT -> {

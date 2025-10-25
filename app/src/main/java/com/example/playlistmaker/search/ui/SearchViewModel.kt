@@ -1,24 +1,19 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.api.TracksConsumer
+import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
+import com.example.playlistmaker.search.domain.api.TracksInteractor
 
-class SearchViewModel(context: Context): ViewModel() {
+class SearchViewModel(private val tracksInteractor: TracksInteractor, private val tracksHistoryInteractor: TracksHistoryInteractor): ViewModel() {
 
     val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable {searchTracksRunnable() }
-    private val tracksInteractor = Creator.provideTracksInteractor()
-    private val tracksHistoryInteractor = Creator.provideTracksHistoryInteractor(context)
 
     private var searchString = ""
     private var lastQuery = ""
@@ -31,6 +26,7 @@ class SearchViewModel(context: Context): ViewModel() {
     fun observeTrackHistoryState(): LiveData<TracksHistoryState> = tracksHistoryStateLiveData
 
     fun searchTextEntered(inputText: String) {
+        handler.removeCallbacks(searchRunnable)
         searchString = inputText
         if (!searchString.isEmpty()) {
             loadTracks()
@@ -91,11 +87,6 @@ class SearchViewModel(context: Context): ViewModel() {
     }
 
     companion object {
-        fun getFactory(context: Context): ViewModelProvider.Factory = viewModelFactory{
-            initializer {
-                SearchViewModel(context)
-            }
-        }
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 

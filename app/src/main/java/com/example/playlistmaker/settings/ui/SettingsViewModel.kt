@@ -6,15 +6,10 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.settings.domain.api.DarkThemeInteractor
 
-class SettingsViewModel (private val context: Context): ViewModel() {
-
-    private val darkThemeInteractor = Creator.provideDarkThemeInteractor(context)
+class SettingsViewModel (private val context: Context, private val darkThemeInteractor: DarkThemeInteractor): ViewModel() {
 
     private val darkThemeState = MutableLiveData<Boolean>()
     fun observeDarkTheme(): LiveData<Boolean> = darkThemeState
@@ -23,6 +18,10 @@ class SettingsViewModel (private val context: Context): ViewModel() {
     fun observeErrorState(): LiveData<String> = errorState
 
     fun init(){
+        errorState.postValue("")
+    }
+
+    fun errorSpent(){
         errorState.postValue("")
     }
 
@@ -38,8 +37,13 @@ class SettingsViewModel (private val context: Context): ViewModel() {
     fun share(){
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.ref_yandex_practicum_android))
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         shareIntent.type = "text/plain"
-        context.startActivity(Intent.createChooser(shareIntent, null))
+        try {
+            context.startActivity(Intent.createChooser(shareIntent, null))
+        } catch (e: Exception) {
+            errorState.postValue("${context.getString(R.string.err_start_activity)} открытия веб-страницы: ${e.message}")
+        }
     }
 
     fun support() {
@@ -48,7 +52,7 @@ class SettingsViewModel (private val context: Context): ViewModel() {
         supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(context.getString(R.string.share_email)))
         supportIntent.putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.share_title))
         supportIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_message))
-        context.startActivity(supportIntent)
+        supportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         try {
             context.startActivity(supportIntent)
         } catch (e: Exception) {
@@ -59,18 +63,11 @@ class SettingsViewModel (private val context: Context): ViewModel() {
     fun agreement(){
         val agreementIntent = Intent(Intent.ACTION_VIEW)
         agreementIntent.data = Uri.parse(context.getString(R.string.ref_yandex_practicum_offer))
+        agreementIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         try{
             context.startActivity(agreementIntent)
         }catch(e: Exception){
             errorState.postValue("${context.getString(R.string.err_start_activity)} открытия веб-страницы: ${e.message}")
-        }
-    }
-
-    companion object {
-        fun getFactory(context: Context): ViewModelProvider.Factory = viewModelFactory{
-            initializer {
-                SettingsViewModel(context)
-            }
         }
     }
 

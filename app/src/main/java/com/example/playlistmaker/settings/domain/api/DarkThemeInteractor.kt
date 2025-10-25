@@ -1,4 +1,4 @@
-package com.example.playlistmaker.settings.data
+package com.example.playlistmaker.settings.domain.api
 
 interface DarkThemeInteractor {
     fun get(): Boolean
