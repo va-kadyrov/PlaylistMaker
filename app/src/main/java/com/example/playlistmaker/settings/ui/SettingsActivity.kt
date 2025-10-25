@@ -6,13 +6,13 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.main.ui.App
 import com.example.playlistmaker.R
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,11 +24,11 @@ class SettingsActivity : AppCompatActivity() {
         val btnAgreement = findViewById<TextView>(R.id.settings_tv_agreement)
         val swtTheme = findViewById<Switch>(R.id.settings_swt_theme)
 
-        viewModel = ViewModelProvider(this, SettingsViewModel.getFactory(this)).get(SettingsViewModel::class.java)
         viewModel.init()
         viewModel.observeDarkTheme().observe(this) {swtTheme.isChecked = it}
         viewModel.observeErrorState().observe(this) {
             if (!it.isEmpty()) Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            viewModel.errorSpent()
         }
 
         viewModel.getDarkTheme()

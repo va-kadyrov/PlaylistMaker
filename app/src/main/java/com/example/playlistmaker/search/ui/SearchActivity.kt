@@ -23,7 +23,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
@@ -32,6 +31,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.domain.Track
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Date
 
 class SearchActivity : AppCompatActivity() {
@@ -45,13 +45,12 @@ class SearchActivity : AppCompatActivity() {
     val tracksAdapter = TracksAdapter(tracks, false)
     val searchHistoryAdapter = TracksAdapter(tracksHistory, true)
     lateinit var playerIntent: Intent
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        viewModel = ViewModelProvider(this, SearchViewModel.getFactory(this)).get(SearchViewModel::class.java)
         viewModel.observeTrackState().observe(this ) {tracksStateObserver(it)}
         viewModel.observeTrackHistoryState().observe(this) {trackHistoryStateObserver(it)}
 
@@ -205,7 +204,7 @@ class SearchActivity : AppCompatActivity() {
 
         fun openPlayer(track: Track){
             val json = Gson().toJson(track)
-            playerIntent.putExtra("track", json);
+            playerIntent.putExtra("track", json)
             startActivity(playerIntent)
         }
     }
