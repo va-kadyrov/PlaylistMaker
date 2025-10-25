@@ -26,6 +26,7 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     fun observeTrackHistoryState(): LiveData<TracksHistoryState> = tracksHistoryStateLiveData
 
     fun searchTextEntered(inputText: String) {
+        handler.removeCallbacks(searchRunnable)
         searchString = inputText
         if (!searchString.isEmpty()) {
             loadTracks()
