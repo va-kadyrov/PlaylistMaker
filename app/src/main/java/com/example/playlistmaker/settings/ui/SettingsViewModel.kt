@@ -46,7 +46,7 @@ class SettingsViewModel (private val context: Context): ViewModel() {
         val supportIntent = Intent(Intent.ACTION_SENDTO)
         supportIntent.data = Uri.parse("mailto:")
         supportIntent.putExtra(Intent.EXTRA_EMAIL, context.getString(R.string.share_email))
-        supportIntent.putExtra(Intent.EXTRA_TITLE, context.getString(R.string.share_title))
+        supportIntent.putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.share_title))
         supportIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_message))
         context.startActivity(supportIntent)
         try {
