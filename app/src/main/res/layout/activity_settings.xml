@@ -26,20 +26,23 @@
         style="@style/SettingsBtnStyle"
         app:thumbTint="@color/thumb"
         app:trackTint="@color/tint"/>
+
     <TextView
         android:id="@+id/settings_tv_share"
         style="@style/SettingsBtnStyle"
-        android:clickable="true"
         android:layout_width="match_parent"
+        android:clickable="true"
         android:text="@string/btn_share_app"
-        app:drawableEndCompat="@drawable/btn_share"/>
+        app:drawableEndCompat="@drawable/btn_share" />
+
     <TextView
         android:id="@+id/settings_tv_support"
         style="@style/SettingsBtnStyle"
-        android:clickable="true"
         android:layout_width="match_parent"
+        android:clickable="true"
         android:text="@string/btn_write_support"
-        app:drawableEndCompat="@drawable/btn_support"/>
+        app:drawableEndCompat="@drawable/btn_support" />
+
     <TextView
         android:id="@+id/settings_tv_agreement"
         style="@style/SettingsBtnStyle"
