@@ -28,6 +28,7 @@
         style="@style/TextAllCapsFalse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:tabBackground="@color/white_almostblack"
         app:tabIndicatorColor="@color/almostblack_white"
         app:tabTextColor="@color/almostblack_white"
         />
