@@ -13,11 +13,11 @@
         android:layout_width="wrap_content"
         android:layout_height="44dp"
         android:layout_gravity="center_horizontal"
-        android:textColor="@color/white_black"
+        android:textColor="@color/white_almostblack"
         android:textSize="14sp"
         android:textAllCaps="false"
         app:cornerRadius="54dp"
-        app:backgroundTint="@color/black_white"
+        app:backgroundTint="@color/almostblack_white"
         android:text="@string/new_playlist"/>
 
     <ImageView

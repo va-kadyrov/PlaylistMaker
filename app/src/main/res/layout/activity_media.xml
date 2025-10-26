@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white_black"
+    android:background="@color/white_almostblack"
     tools:context=".media.ui.MediaActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -17,8 +17,8 @@
         app:titleMarginStart="40dp"
         app:logo="@drawable/btn_back"
         app:title="@string/media_header"
-        app:titleTextColor="@color/black_white"
-        android:background="@color/white_black"
+        app:titleTextColor="@color/almostblack_white"
+        android:background="@color/white_almostblack"
         android:textSize="@dimen/large_text"
         android:fontFamily="@font/ys_display_medium"
         android:paddingHorizontal="@dimen/padding_horizontal"/>
@@ -28,9 +28,8 @@
         style="@style/TextAllCapsFalse"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabIndicatorColor="@color/black_white"
-        app:tabTextColor="@color/black_white"
-
+        app:tabIndicatorColor="@color/almostblack_white"
+        app:tabTextColor="@color/almostblack_white"
         />
 
     <androidx.viewpager2.widget.ViewPager2

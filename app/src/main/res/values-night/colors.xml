@@ -18,5 +18,6 @@
     <color name="player_gray_text">#AEAFB4</color>
     <color name="black_white">#FFFFFF</color>
     <color name="white_black">#000000</color>
-    <color name="media_background">#1A1B22</color>
+    <color name="almostblack_white">#1A1B22</color>
+    <color name="white_almostblack">#FFFFFF</color>
 </resources>
