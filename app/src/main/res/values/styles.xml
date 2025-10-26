@@ -43,4 +43,8 @@
         <item name="android:textSize">@dimen/little_text2</item>
         <item name="android:textColor">@color/search_pl_text</item>
     </style>
+    <style name="TextAllCapsFalse" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
 </resources>
