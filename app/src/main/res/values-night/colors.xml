@@ -16,4 +16,8 @@
     <color name="search_tracklist_text">#FFFFFF</color>
     <color name="search_pl_text">#FFFFFF</color>
     <color name="player_gray_text">#AEAFB4</color>
+    <color name="black_white">#FFFFFF</color>
+    <color name="white_black">#000000</color>
+    <color name="almostblack_white">#FFFFFF</color>
+    <color name="white_almostblack">#1A1B22</color>
 </resources>
