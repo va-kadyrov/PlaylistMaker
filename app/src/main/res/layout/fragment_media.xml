@@ -7,15 +7,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white_almostblack"
-    tools:context=".media.ui.MediaActivity">
+    tools:context=".media.ui.MediaFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/media_tb_back"
         android:layout_width="match_parent"
         android:layout_height="@dimen/small_btn_size"
         android:layout_marginBottom="16dp"
-        app:titleMarginStart="40dp"
-        app:logo="@drawable/btn_back"
         app:title="@string/media_header"
         app:titleTextColor="@color/almostblack_white"
         android:background="@color/white_almostblack"

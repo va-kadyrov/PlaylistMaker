@@ -10,6 +10,7 @@ import com.example.playlistmaker.search.domain.api.TracksHistoryRepository
 import com.example.playlistmaker.search.domain.api.TracksRepository
 import com.example.playlistmaker.settings.data.PropBooleanRepositoryImpl
 import com.example.playlistmaker.settings.domain.api.PropBooleanRepository
+import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -35,5 +36,7 @@ val dataModule = module {
     single<NetworkClient> {
         RetrofitNetworkClient()
     }
+
+    factory { Gson() }
 
 }

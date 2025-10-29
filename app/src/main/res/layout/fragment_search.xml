@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/settings_back"
-    tools:context=".SearchActivity">
+    tools:context=".main.ui.RootActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/search_tb_back"
@@ -15,9 +15,7 @@
         android:paddingHorizontal="@dimen/padding_horizontal"
         android:textSize="@dimen/large_text"
         android:fontFamily="@font/ys_display_medium"
-        app:logo="@drawable/btn_back"
         app:title="@string/search_header"
-        app:titleMarginStart="40dp"
         app:titleTextColor="@color/search_btn_back" />
 
     <FrameLayout

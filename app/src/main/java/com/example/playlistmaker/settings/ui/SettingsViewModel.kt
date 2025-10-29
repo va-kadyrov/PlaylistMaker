@@ -3,6 +3,7 @@ package com.example.playlistmaker.settings.ui
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,13 +26,16 @@ class SettingsViewModel (private val context: Context, private val darkThemeInte
         errorState.postValue("")
     }
 
-    fun getDarkTheme() {
-        darkThemeState.postValue(darkThemeInteractor.get())
+    fun getDarkTheme(): Boolean {
+        return darkThemeInteractor.get()
     }
 
     fun setDarkTheme(state: Boolean) {
-        darkThemeInteractor.set(state)
-        darkThemeState.postValue(state)
+        if (state != darkThemeInteractor.get()){
+            darkThemeInteractor.set(state)}
+        if (state != darkThemeState.value){
+                     darkThemeState.postValue(state)
+            }
     }
 
     fun share(){

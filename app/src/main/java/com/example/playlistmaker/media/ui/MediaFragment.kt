@@ -1,6 +1,9 @@
 package com.example.playlistmaker.media.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -9,24 +12,28 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentMediaBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MediaActivity : AppCompatActivity() {
+class MediaFragment : Fragment()  {
 
-    private lateinit var tabMediator: TabLayoutMediator
+    private lateinit var binding: FragmentMediaBinding
+    private var tabMediator: TabLayoutMediator? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_media)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentMediaBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        val btnBack = findViewById<Toolbar>(R.id.media_tb_back)
-        val viewPager = findViewById<ViewPager2>(R.id.viewPager)
-        val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        btnBack.setOnClickListener { this.finish() }
+        val viewPager = binding.viewPager
+        val tabLayout = binding.tabLayout
 
-        viewPager.adapter = NumbersViewPagerAdapter(supportFragmentManager, lifecycle)
+        viewPager.adapter = NumbersViewPagerAdapter(childFragmentManager, lifecycle)
 
         tabMediator = TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
@@ -34,12 +41,14 @@ class MediaActivity : AppCompatActivity() {
                 1 -> tab.text = getString(R.string.playlists)
             }
         }
-        tabMediator.attach()
+        tabMediator?.attach()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        tabMediator.detach()
+        if (tabMediator?.isAttached?:false) {
+            tabMediator?.detach()
+        }
     }
 
     inner class NumbersViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :

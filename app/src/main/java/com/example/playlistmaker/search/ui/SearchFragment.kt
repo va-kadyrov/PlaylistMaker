@@ -1,5 +1,6 @@
 package com.example.playlistmaker.search.ui
 
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
@@ -23,18 +24,27 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.Track
 import com.google.gson.Gson
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Date
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
+
+    private val viewModel: SearchViewModel by viewModel()
+    private lateinit var binding: FragmentSearchBinding
 
     val handler = Handler(Looper.getMainLooper())
     private lateinit var inputEditText: EditText
@@ -44,25 +54,25 @@ class SearchActivity : AppCompatActivity() {
     val tracksHistory = mutableListOf<Track>()
     val tracksAdapter = TracksAdapter(tracks, false)
     val searchHistoryAdapter = TracksAdapter(tracksHistory, true)
-    lateinit var playerIntent: Intent
-    private val viewModel: SearchViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(
+        inflater: LayoutInflater,container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
 
-        viewModel.observeTrackState().observe(this ) {tracksStateObserver(it)}
-        viewModel.observeTrackHistoryState().observe(this) {trackHistoryStateObserver(it)}
+        viewModel.observeTrackState().observe(viewLifecycleOwner ) {tracksStateObserver(it)}
+        viewModel.observeTrackHistoryState().observe(viewLifecycleOwner) {trackHistoryStateObserver(it)}
 
-        playerIntent = Intent(this, PlayerActivity::class.java)
-
-        inputEditText = findViewById<EditText>(R.id.search_et)
-        val btnClear = findViewById<ImageView>(R.id.search_btn_clear)
-        val btnBack = findViewById<Toolbar>(R.id.search_tb_back)
-        val btnReload = findViewById<Button>(R.id.search_btn_reload)
-        val recView = findViewById<RecyclerView>(R.id.search_recView)
-        val btnClearHistory = findViewById<Button>(R.id.search_btn_clear_history)
-        val recHistory = findViewById<RecyclerView>(R.id.search_history_recView)
+        inputEditText = binding.searchEt
+        val btnClear = binding.searchBtnClear
+        val btnReload = binding.searchBtnReload
+        val recView = binding.searchRecView
+        val btnClearHistory = binding.searchBtnClearHistory
+        val recHistory = binding.searchHistoryRecView
 
         recView.adapter = tracksAdapter
         recHistory.adapter = searchHistoryAdapter
@@ -91,16 +101,12 @@ class SearchActivity : AppCompatActivity() {
         btnClear.setOnClickListener {
             inputEditText.setText("")
             viewModel.searchTextEntered("")
-            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager = getSystemService(requireContext(), InputMethodManager::class.java) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
         }
 
         btnClearHistory.setOnClickListener{
             viewModel.clearTracksHistory()
-        }
-
-        btnBack.setOnClickListener {
-            finish()
         }
 
         btnReload.setOnClickListener {
@@ -117,48 +123,44 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     fun showTracks(){
-        findViewById<RecyclerView>(R.id.search_recView).visibility = VISIBLE
-        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
-        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
+        binding.searchRecView.visibility = VISIBLE
+        binding.searchHistory.visibility = GONE
+        binding.searchNothingFound.visibility = GONE
+        binding.searchNetworkError.visibility = GONE
+        binding.progressBar.visibility = GONE
     }
 
     fun showHistory(){
-        findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_history).visibility = VISIBLE
-        findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
-        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
+        binding.searchRecView.visibility = GONE
+        binding.searchHistory.visibility = VISIBLE
+        binding.searchNothingFound.visibility = GONE
+        binding.searchNetworkError.visibility = GONE
+        binding.progressBar.visibility = GONE
     }
 
     fun showNothingFound(){
-        findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_nothing_found).visibility = VISIBLE
-        findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
-        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
+        binding.searchRecView.visibility = GONE
+        binding.searchHistory.visibility = GONE
+        binding.searchNothingFound.visibility = VISIBLE
+        binding.searchNetworkError.visibility = GONE
+        binding.progressBar.visibility = GONE
     }
 
     fun showNetworkError(){
-        findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_network_error).visibility = VISIBLE
-        findViewById<ProgressBar>(R.id.progressBar).visibility = GONE
+        binding.searchRecView.visibility = GONE
+        binding.searchHistory.visibility = GONE
+        binding.searchNothingFound.visibility = GONE
+        binding.searchNetworkError.visibility = VISIBLE
+        binding.progressBar.visibility = GONE
     }
 
     fun showProgressBar(){
-        findViewById<RecyclerView>(R.id.search_recView).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_history).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_nothing_found).visibility = GONE
-        findViewById<LinearLayout>(R.id.search_network_error).visibility = GONE
-        findViewById<ProgressBar>(R.id.progressBar).visibility = VISIBLE
+        binding.searchRecView.visibility = GONE
+        binding.searchHistory.visibility = GONE
+        binding.searchNothingFound.visibility = GONE
+        binding.searchNetworkError.visibility = GONE
+        binding.progressBar.visibility = VISIBLE
     }
 
     class TracksViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -202,10 +204,13 @@ class SearchActivity : AppCompatActivity() {
             return items.size
         }
 
-        fun openPlayer(track: Track){
-            val json = Gson().toJson(track)
-            playerIntent.putExtra("track", json)
-            startActivity(playerIntent)
+        fun openPlayer(track: Track) {
+            val gson: Gson by inject()
+            val trackJson: String = gson.toJson(track)
+            findNavController().navigate(
+                R.id.action_searchFragment_to_playerFragment,
+                PlayerFragment.createArgs(trackJson)
+            )
         }
     }
 
@@ -245,5 +250,8 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "myLog"
-        private const val CLICK_DEBOUNCE_DELAY = 1000L}
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+    }
+
 }
+
