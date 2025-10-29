@@ -44,7 +44,7 @@ class SettingsViewModel (private val context: Context, private val darkThemeInte
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         shareIntent.type = "text/plain"
         try {
-            context.startActivity(Intent.createChooser(shareIntent, null))
+            context.startActivity(shareIntent, null)
         } catch (e: Exception) {
             errorState.postValue("${context.getString(R.string.err_start_activity)} открытия веб-страницы: ${e.message}")
         }
