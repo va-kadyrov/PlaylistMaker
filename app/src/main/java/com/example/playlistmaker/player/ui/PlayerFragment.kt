@@ -12,58 +12,52 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import android.icu.text.SimpleDateFormat
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import java.util.Date
 import java.util.Locale
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentMediaBinding
+import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.search.domain.Track
 import org.koin.android.ext.android.inject
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerFragment : Fragment() {
 
     private val viewModel: PlayerViewModel by inject()
+    private lateinit var binding: FragmentPlayerBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-
-        viewModel.observePlayerState().observe(this){
-            when(it) {
-                STATE_DEFAULT -> {
-                    btnPlay.setBackgroundResource(R.drawable.btn_play_track)
-                    btnPlay.isEnabled = false
-                }
-                STATE_PLAYING -> {
-                    btnPlay.setBackgroundResource(R.drawable.btn_pause)
-                }
-                STATE_PREPARED, STATE_PAUSED -> {
-                    btnPlay.setBackgroundResource(R.drawable.btn_play_track)
-                    btnPlay.isEnabled = true
-                }
-            }
-        }
-        viewModel.observeTrackTimerState().observe(this) {
-            plaingProgress.text = it
-        }
 
         val timeFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
+        val trackJson = requireArguments().getString(TRACK_JSON) ?: ""
 
-        val json = intent.getStringExtra("track")
-        val track = Gson().fromJson(json, Track::class.java)
+        val track = Gson().fromJson(trackJson, Track::class.java)
         val yearFormat = SimpleDateFormat("YYYY")
 
-        val player_trackName = findViewById<TextView>(R.id.player_trackName)
-        val player_artistName = findViewById<TextView>(R.id.player_artistName)
-        val player_trackTime = findViewById<TextView>(R.id.player_trackTime)
-        val player_collectionName = findViewById<TextView>(R.id.player_collectionName)
-        val player_releaseDate = findViewById<TextView>(R.id.player_releaseDate)
-        val player_genre = findViewById<TextView>(R.id.player_genre)
-        val player_country = findViewById<TextView>(R.id.player_country)
-        val player_albumCover = findViewById<ImageView>(R.id.player_albumCover)
+        val player_trackName = binding.playerTrackName
+        val player_artistName = binding.playerArtistName
+        val player_trackTime = binding.playerTrackTime
+        val player_collectionName = binding.playerCollectionName
+        val player_releaseDate = binding.playerReleaseDate
+        val player_genre = binding.playerGenre
+        val player_country = binding.playerCountry
+        val player_albumCover = binding.playerAlbumCover
 
-        val btnBack = findViewById<Toolbar>(R.id.player_tb_back)
-        val btnLike = findViewById<Button>(R.id.player_btn_like)
-        btnPlay = findViewById<Button>(R.id.player_btn_play)
-        plaingProgress = findViewById<TextView>(R.id.player_playing_progress)
+        val btnBack = binding.playerTbBack
+        val btnLike = binding.playerBtnLike
+        btnPlay = binding.playerBtnPlay
+        plaingProgress = binding.playerPlayingProgress
         btnPlay.isEnabled = false
 
         player_trackName.text       = track.trackName
@@ -78,15 +72,34 @@ class PlayerActivity : AppCompatActivity() {
 
         if (player_collectionName.text.isNullOrEmpty()) {
             player_collectionName.visibility = View.GONE
-            findViewById<TextView>(R.id.player_collectionName_title).visibility = View.GONE
+            binding.playerCollectionNameTitle.visibility = View.GONE
         }
 
-        Glide.with(applicationContext).load(getCoverArtwork(track.artworkUrl100))
+        Glide.with(this).load(getCoverArtwork(track.artworkUrl100))
                 .transform(FitCenter(), RoundedCorners(12))
                 .placeholder(R.drawable.album_cover_empty).into(player_albumCover)
 
+        viewModel.observePlayerState().observe(viewLifecycleOwner){
+            when(it) {
+                STATE_DEFAULT -> {
+                    btnPlay.setBackgroundResource(R.drawable.btn_play_track)
+                    btnPlay.isEnabled = false
+                }
+                STATE_PLAYING -> {
+                    btnPlay.setBackgroundResource(R.drawable.btn_pause)
+                }
+                STATE_PREPARED, STATE_PAUSED -> {
+                    btnPlay.setBackgroundResource(R.drawable.btn_play_track)
+                    btnPlay.isEnabled = true
+                }
+            }
+        }
+        viewModel.observeTrackTimerState().observe(viewLifecycleOwner) {
+            plaingProgress.text = it
+        }
+
         btnBack.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
 
         btnPlay.setOnClickListener {
@@ -119,5 +132,10 @@ class PlayerActivity : AppCompatActivity() {
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
+
+        private const val TRACK_JSON = "track_json"
+
+        fun createArgs(trackJson: String) : Bundle = bundleOf(TRACK_JSON to trackJson)
+
     }
 }

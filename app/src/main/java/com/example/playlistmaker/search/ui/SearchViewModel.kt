@@ -26,7 +26,7 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     fun observeTrackHistoryState(): LiveData<TracksHistoryState> = tracksHistoryStateLiveData
 
     fun searchTextEntered(inputText: String) {
-        handler.removeCallbacks(searchRunnable)
+        handler.removeCallbacks(searchRunnable) // а то запускался лишний поиск после выхода из плеера.
         searchString = inputText
         if (!searchString.isEmpty()) {
             loadTracks()
@@ -37,6 +37,7 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     }
 
     fun searchTextChanged(inputText: String) {
+        if (searchString == inputText) return
         searchString = inputText
         handler.removeCallbacks(searchRunnable)
         if (searchString.isEmpty()) {

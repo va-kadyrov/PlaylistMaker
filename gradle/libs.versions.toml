@@ -15,7 +15,10 @@ material3 = "1.4.0"
 activityKtx = "1.6.1"
 lifecycleViewmodelKTX = "2.5.1"
 koin = "3.3.0"
-fragment-version = "1.5.5"
+fragmentVersion = "1.5.6"
+navigationFragmentVersion = "2.5.3"
+navigationUiVersion = "2.5.3"
+gson = "2.13.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,7 +36,10 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 koin-android = {group = "io.insert-koin", name = "koin-android", version.ref = "koin"}
-androidx-fragment-ktx = {group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment-version"}
+androidx-fragment-ktx = {group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentVersion"}
+androidx-navigation-fragment-ktx = {group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentVersion"}
+androidx-navigation-ui-ktx = {group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiVersion"}
+gson = { group = "com.google.code.gson", name= "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

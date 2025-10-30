@@ -11,8 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/small_btn_size"
         android:layout_marginBottom="16dp"
-        app:titleMarginStart="40dp"
-        app:logo="@drawable/btn_back"
         app:title="@string/settings_header"
         app:titleTextColor="@color/settings_text"
         android:textSize="@dimen/large_text"
