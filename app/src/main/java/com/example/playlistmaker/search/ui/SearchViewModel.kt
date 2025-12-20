@@ -5,14 +5,19 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.api.TracksConsumer
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.example.playlistmaker.search.domain.api.TracksInteractor
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(private val tracksInteractor: TracksInteractor, private val tracksHistoryInteractor: TracksHistoryInteractor): ViewModel() {
 
-    val handler = Handler(Looper.getMainLooper())
+    //val handler = Handler(Looper.getMainLooper())
+    private var searchJob: Job? = null
     private val searchRunnable = Runnable {searchTracksRunnable() }
 
     private var searchString = ""
@@ -26,7 +31,8 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     fun observeTrackHistoryState(): LiveData<TracksHistoryState> = tracksHistoryStateLiveData
 
     fun searchTextEntered(inputText: String) {
-        handler.removeCallbacks(searchRunnable) // а то запускался лишний поиск после выхода из плеера.
+//        handler.removeCallbacks(searchRunnable) // а то запускался лишний поиск после выхода из плеера.
+        searchJob?.cancel()
         searchString = inputText
         if (!searchString.isEmpty()) {
             loadTracks()
@@ -39,13 +45,18 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     fun searchTextChanged(inputText: String) {
         if (searchString == inputText) return
         searchString = inputText
-        handler.removeCallbacks(searchRunnable)
+//        handler.removeCallbacks(searchRunnable)
+        searchJob?.cancel()
         if (searchString.isEmpty()) {
             tracksStateLiveData.postValue(TracksState(false, false, false, "",emptyList<Track>().toMutableList()))
             showHistory()
         } else {
             tracksHistoryStateLiveData.postValue(TracksHistoryState(false, false, emptyList<Track>().toMutableList()))
-            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+//            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+            searchJob = viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                loadTracks()
+            }
         }
     }
 
