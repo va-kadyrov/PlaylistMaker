@@ -127,7 +127,6 @@ class PlayerFragment : Fragment() {
     fun getCoverArtwork(artworkUrl100: String) = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
 
     companion object {
-        private const val TAG = "myLog"
         private const val STATE_DEFAULT = 0
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2

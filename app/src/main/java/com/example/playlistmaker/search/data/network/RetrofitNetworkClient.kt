@@ -1,6 +1,8 @@
 package com.example.playlistmaker.search.data.network
 
 import com.example.playlistmaker.search.data.dto.TracksSearchRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -11,11 +13,18 @@ class RetrofitNetworkClient : NetworkClient {
 
     private val tracksApiService = retrofit.create(TracksApiService::class.java)
 
-    override fun doRequest(dto: Any): Response {
+    override suspend fun doRequest(dto: Any): Response {
         if (dto is TracksSearchRequest) {
-            val resp = tracksApiService.getTracks("song", dto.expression).execute()
-            val body = resp.body() ?: Response()
-            return body.apply { resultCode = resp.code() }
+            return withContext(Dispatchers.IO) {
+                try{
+                    val resp = tracksApiService.getTracks("song", dto.expression)
+//                    val body = resp.body() ?: Response()
+                    resp.apply { resultCode = 200 }}
+                catch (e: Throwable) {
+                    Response().apply { resultCode = 500 }
+                }
+            }
+
         } else {
             return Response().apply { resultCode = 400}
         }

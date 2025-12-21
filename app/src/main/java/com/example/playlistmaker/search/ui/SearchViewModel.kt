@@ -2,6 +2,7 @@ package com.example.playlistmaker.search.ui
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -54,7 +55,9 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
             tracksHistoryStateLiveData.postValue(TracksHistoryState(false, false, emptyList<Track>().toMutableList()))
 //            handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
             searchJob = viewModelScope.launch {
+                Log.i("myLog", "searchString=$searchString")
                 delay(SEARCH_DEBOUNCE_DELAY)
+                Log.i("myLog", "start searching...")
                 loadTracks()
             }
         }
@@ -89,7 +92,14 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     private fun loadTracks(){
         tracksStateLiveData.postValue(TracksState(true,false, false, "", emptyList<Track>().toMutableList()))
         lastQuery = searchString
-        tracksInteractor.loadTracks(searchString, TracksConsumerImpl())
+//        tracksInteractor.loadTracks(searchString, TracksConsumerImpl())
+        viewModelScope.launch {
+            tracksInteractor.loadTracks(searchString).collect { tracks ->
+                tracksStateLiveData.postValue(TracksState(
+                    false,tracks.isEmpty(), false, "", (tracks?:emptyList()).toMutableList())
+                )
+            }
+        }
     }
 
     private fun searchTracksRunnable() {

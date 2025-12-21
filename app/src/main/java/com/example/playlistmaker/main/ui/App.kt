@@ -8,6 +8,8 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
+const val TAG = "myLog"
+
 class App : Application() {
 
     var darkTheme = false

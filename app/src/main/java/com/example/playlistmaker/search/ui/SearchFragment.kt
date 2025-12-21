@@ -26,7 +26,9 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
+import androidx.core.util.Predicate.not
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -37,18 +39,23 @@ import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.Track
 import com.google.gson.Gson
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Date
+import com.example.playlistmaker.main.ui.TAG
 
 class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
     private lateinit var binding: FragmentSearchBinding
 
-    val handler = Handler(Looper.getMainLooper())
+//    val handler = Handler(Looper.getMainLooper())
     private lateinit var inputEditText: EditText
-    private var isClickAllowed = true
+//    private var isClickAllowed = true
+    private var clickDebounceJob : Job? = null
 
     val tracks = mutableListOf<Track>()
     val tracksHistory = mutableListOf<Track>()
@@ -195,6 +202,7 @@ class SearchFragment : Fragment() {
                     if (!isHistory) {
                         viewModel.addTrackToHistory(items[position])
                     }
+                    Log.i(TAG, "Open player!")
                     openPlayer(items[position])
                 }
            }
@@ -215,12 +223,20 @@ class SearchFragment : Fragment() {
     }
 
     private fun clickDebounce() : Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+//        val current = isClickAllowed
+        Log.i(TAG, "clickDebounceJob?.isActive? = ${clickDebounceJob?.isActive?.toString()}")
+        val isJobActive = clickDebounceJob?.isActive?:false
+        if (!isJobActive) {
+//            isClickAllowed = false
+//            handler.postDelayed({ isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+            clickDebounceJob = viewLifecycleOwner.lifecycleScope.launch {
+                Log.i(TAG, "clickDebounceJob launch..")
+                delay(CLICK_DEBOUNCE_DELAY)
+//                isClickAllowed = true
+                Log.i(TAG, "clickDebounceJob completed")
+            }
         }
-        return current
+        return !isJobActive
     }
 
     private fun tracksStateObserver(it: TracksState) {
@@ -249,7 +265,6 @@ class SearchFragment : Fragment() {
    }
 
     companion object {
-        const val TAG = "myLog"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
