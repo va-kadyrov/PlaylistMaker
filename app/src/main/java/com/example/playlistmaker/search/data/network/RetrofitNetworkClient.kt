@@ -18,7 +18,6 @@ class RetrofitNetworkClient : NetworkClient {
             return withContext(Dispatchers.IO) {
                 try{
                     val resp = tracksApiService.getTracks("song", dto.expression)
-//                    val body = resp.body() ?: Response()
                     resp.apply { resultCode = 200 }}
                 catch (e: Throwable) {
                     Response().apply { resultCode = 500 }

@@ -1,12 +1,7 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.content.Intent
 import android.icu.text.SimpleDateFormat
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -17,16 +12,10 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.os.bundleOf
-import androidx.core.util.Predicate.not
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -52,15 +41,19 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModel()
     private lateinit var binding: FragmentSearchBinding
 
-//    val handler = Handler(Looper.getMainLooper())
     private lateinit var inputEditText: EditText
-//    private var isClickAllowed = true
+    private var isClickAllowed = true
     private var clickDebounceJob : Job? = null
 
     val tracks = mutableListOf<Track>()
     val tracksHistory = mutableListOf<Track>()
     val tracksAdapter = TracksAdapter(tracks, false)
     val searchHistoryAdapter = TracksAdapter(tracksHistory, true)
+
+    override fun onResume(){
+        super.onResume()
+        isClickAllowed = true
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -94,7 +87,6 @@ class SearchFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged s=${s?:""}")
                 if (s.isNullOrEmpty()) btnClear.visibility = View.INVISIBLE
                 else btnClear.visibility = View.VISIBLE
                 viewModel.searchTextChanged((s?:"").toString())
@@ -202,7 +194,6 @@ class SearchFragment : Fragment() {
                     if (!isHistory) {
                         viewModel.addTrackToHistory(items[position])
                     }
-                    Log.i(TAG, "Open player!")
                     openPlayer(items[position])
                 }
            }
@@ -215,6 +206,7 @@ class SearchFragment : Fragment() {
         fun openPlayer(track: Track) {
             val gson: Gson by inject()
             val trackJson: String = gson.toJson(track)
+            Log.i(TAG, "Player are opening")
             findNavController().navigate(
                 R.id.action_searchFragment_to_playerFragment,
                 PlayerFragment.createArgs(trackJson)
@@ -223,20 +215,15 @@ class SearchFragment : Fragment() {
     }
 
     private fun clickDebounce() : Boolean {
-//        val current = isClickAllowed
-        Log.i(TAG, "clickDebounceJob?.isActive? = ${clickDebounceJob?.isActive?.toString()}")
-        val isJobActive = clickDebounceJob?.isActive?:false
-        if (!isJobActive) {
-//            isClickAllowed = false
-//            handler.postDelayed({ isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
-            clickDebounceJob = viewLifecycleOwner.lifecycleScope.launch {
-                Log.i(TAG, "clickDebounceJob launch..")
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            clickDebounceJob = viewLifecycleOwner.lifecycleScope.launch  {
                 delay(CLICK_DEBOUNCE_DELAY)
-//                isClickAllowed = true
-                Log.i(TAG, "clickDebounceJob completed")
+                isClickAllowed = true
             }
         }
-        return !isJobActive
+        return current
     }
 
     private fun tracksStateObserver(it: TracksState) {

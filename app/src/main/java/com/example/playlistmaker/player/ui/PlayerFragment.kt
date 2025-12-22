@@ -2,11 +2,8 @@ package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.TextView
-import android.widget.ImageView
-import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -20,7 +17,6 @@ import androidx.navigation.fragment.findNavController
 import java.util.Date
 import java.util.Locale
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.FragmentMediaBinding
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.search.domain.Track
 import org.koin.android.ext.android.inject
