@@ -6,9 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.player.data.db.FavoriteTracksRepositoryImpl
 import com.example.playlistmaker.player.domain.FavoriteTracksInteractor
-import com.example.playlistmaker.player.domain.db.FavoriteTracksRepository
 import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,27 +17,23 @@ class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksIntera
 
     private val mediaPlayer = MediaPlayer()
 
-    private val playerState = MutableLiveData<Int>(STATE_DEFAULT)
-    fun observePlayerState(): LiveData<Int> = playerState
-
-    private val trackTimerState = MutableLiveData<String>()
-    fun observeTrackTimerState(): LiveData<String> = trackTimerState
-
-    private val isFavoriteState = MutableLiveData<Boolean>()
-    fun observeIsFavoriteState(): LiveData<Boolean> = isFavoriteState
+    private val playerFragmentState = PlayerFragmentState(STATE_DEFAULT, "00:00", false)
+    private val playerFragmentStateLD = MutableLiveData<PlayerFragmentState>(playerFragmentState)
+    fun observePlayerFragmentState(): LiveData<PlayerFragmentState> = playerFragmentStateLD
 
     private val timeFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private var trackTimer : Job? = null
 
     fun init(track: Track) {
-        if (playerState.value == STATE_DEFAULT) {
+        if (playerFragmentState.playerStatus == STATE_DEFAULT) {
             preparePlayer(track.previewUrl)
         }
-        isFavoriteState.postValue(track.isFavorite)
+        playerFragmentState.isFavorite = track.isFavorite
+        playerFragmentStateLD.postValue(playerFragmentState)
     }
 
     fun playerControl() {
-        when(playerState.value) {
+        when(playerFragmentState.playerStatus) {
             STATE_PLAYING -> {
                 pausePlayer()
             }
@@ -53,10 +47,12 @@ class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksIntera
         mediaPlayer.setDataSource(trackUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            playerState.postValue(STATE_PREPARED)
+            playerFragmentState.playerStatus = STATE_PREPARED
+            playerFragmentStateLD.postValue(playerFragmentState)
         }
         mediaPlayer.setOnCompletionListener {
-            playerState.postValue(STATE_PREPARED)
+            playerFragmentState.playerStatus = STATE_PREPARED
+            playerFragmentStateLD.postValue(playerFragmentState)
         }
     }
 
@@ -65,12 +61,13 @@ class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksIntera
 
     private fun startPlayer() {
         mediaPlayer.start()
-        playerState.postValue(STATE_PLAYING)
+        playerFragmentState.playerStatus = STATE_PLAYING
+        playerFragmentStateLD.postValue(playerFragmentState)
         if ((trackTimer?.isActive?:false) == false) {
             trackTimer?.cancel()
             trackTimer = viewModelScope.launch {
                 delay(MP_REQUEST_INTERVAL)
-                while (playerState.value == STATE_PLAYING) {
+                while (playerFragmentState.playerStatus == STATE_PLAYING) {
                     setPlaingProgress()
                     delay(MP_REQUEST_INTERVAL)
                 }
@@ -80,7 +77,7 @@ class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksIntera
     }
 
     fun onPause(){
-        if (playerState.value == STATE_PLAYING){
+        if (playerFragmentState.playerStatus == STATE_PLAYING){
             pausePlayer()
         }
     }
@@ -89,25 +86,28 @@ class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksIntera
         if (track.isFavorite) {
             track.isFavorite = false
             viewModelScope.launch { favoriteTracksInteractor.delete(track) }
-            isFavoriteState.postValue(false)}
+            playerFragmentState.isFavorite = false
+        }
         else {
             track.isFavorite = true
             viewModelScope.launch { favoriteTracksInteractor.insert(track) }
-            isFavoriteState.postValue(true)}
+            playerFragmentState.isFavorite = true
+        }
+        playerFragmentStateLD.postValue(playerFragmentState)
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
-        playerState.postValue( STATE_PAUSED)
+        playerFragmentState.playerStatus = STATE_PAUSED
+        playerFragmentStateLD.postValue(playerFragmentState)
     }
 
     private fun setPlaingProgress(){
-        var currentPosition = 0
-        if ((playerState.value == STATE_PLAYING) or (playerState.value == STATE_PAUSED)) {
-            currentPosition = mediaPlayer.currentPosition }
+        if ((playerFragmentState.playerStatus == STATE_PLAYING) or (playerFragmentState.playerStatus == STATE_PAUSED)) {
+            playerFragmentState.trackTimeProgress = timeFormat.format(mediaPlayer.currentPosition) }
         else {
-            currentPosition = 0 }
-            trackTimerState.postValue(timeFormat.format(currentPosition))
+            playerFragmentState.trackTimeProgress = timeFormat.format(0) }
+            playerFragmentStateLD.postValue(playerFragmentState)
     }
 
     companion object {

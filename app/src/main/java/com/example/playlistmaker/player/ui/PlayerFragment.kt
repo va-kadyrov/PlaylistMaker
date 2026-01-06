@@ -77,8 +77,8 @@ class PlayerFragment : Fragment() {
                 .transform(FitCenter(), RoundedCorners(12))
                 .placeholder(R.drawable.album_cover_empty).into(player_albumCover)
 
-        viewModel.observePlayerState().observe(viewLifecycleOwner){
-            when(it) {
+        viewModel.observePlayerFragmentState().observe(viewLifecycleOwner){
+            when(it.playerStatus) {
                 STATE_DEFAULT -> {
                     btnPlay.setBackgroundResource(R.drawable.btn_play_track)
                     btnPlay.isEnabled = false
@@ -91,12 +91,8 @@ class PlayerFragment : Fragment() {
                     btnPlay.isEnabled = true
                 }
             }
-        }
-        viewModel.observeTrackTimerState().observe(viewLifecycleOwner) {
-            plaingProgress.text = it
-        }
-        viewModel.observeIsFavoriteState().observe(viewLifecycleOwner) {
-            if (it) btnLike.setBackgroundResource(R.drawable.btn_like_track1) else btnLike.setBackgroundResource(R.drawable.btn_like_track)
+            plaingProgress.text = it.trackTimeProgress
+            if (it.isFavorite) btnLike.setBackgroundResource(R.drawable.btn_like_track1) else btnLike.setBackgroundResource(R.drawable.btn_like_track)
         }
 
         btnBack.setOnClickListener {
