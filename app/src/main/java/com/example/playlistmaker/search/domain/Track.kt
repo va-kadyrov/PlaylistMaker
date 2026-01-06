@@ -12,4 +12,6 @@ class Track (
     val country: String,
     val artworkUrl100: String,
     val trackId: Long,
-    val previewUrl: String)
+    val previewUrl: String,
+    var isFavorite: Boolean = false
+)

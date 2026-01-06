@@ -4,10 +4,10 @@ import com.example.playlistmaker.search.domain.Track
 
 interface TracksHistoryInteractor {
 
-    fun loadTracks(consumer: TracksConsumer)
+    suspend fun loadTracks(consumer: TracksConsumer)
 
     fun clearTracks(consumer: TracksConsumer)
 
-    fun addTrack(track: Track, consumer: TracksConsumer)
+    suspend fun addTrack(track: Track, consumer: TracksConsumer)
 
 }

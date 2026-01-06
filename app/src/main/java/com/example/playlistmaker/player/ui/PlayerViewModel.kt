@@ -6,12 +6,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.player.data.db.FavoriteTracksRepositoryImpl
+import com.example.playlistmaker.player.domain.FavoriteTracksInteractor
+import com.example.playlistmaker.player.domain.db.FavoriteTracksRepository
+import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class PlayerViewModel: ViewModel() {
+class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksInteractor): ViewModel() {
 
     private val mediaPlayer = MediaPlayer()
 
@@ -21,13 +25,17 @@ class PlayerViewModel: ViewModel() {
     private val trackTimerState = MutableLiveData<String>()
     fun observeTrackTimerState(): LiveData<String> = trackTimerState
 
+    private val isFavoriteState = MutableLiveData<Boolean>()
+    fun observeIsFavoriteState(): LiveData<Boolean> = isFavoriteState
+
     private val timeFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private var trackTimer : Job? = null
 
-    fun init(trackUrl: String) {
+    fun init(track: Track) {
         if (playerState.value == STATE_DEFAULT) {
-            preparePlayer(trackUrl)
+            preparePlayer(track.previewUrl)
         }
+        isFavoriteState.postValue(track.isFavorite)
     }
 
     fun playerControl() {
@@ -75,6 +83,17 @@ class PlayerViewModel: ViewModel() {
         if (playerState.value == STATE_PLAYING){
             pausePlayer()
         }
+    }
+
+    fun onBtnLikeClicked(track: Track){
+        if (track.isFavorite) {
+            track.isFavorite = false
+            viewModelScope.launch { favoriteTracksInteractor.delete(track) }
+            isFavoriteState.postValue(false)}
+        else {
+            track.isFavorite = true
+            viewModelScope.launch { favoriteTracksInteractor.insert(track) }
+            isFavoriteState.postValue(true)}
     }
 
     private fun pausePlayer() {

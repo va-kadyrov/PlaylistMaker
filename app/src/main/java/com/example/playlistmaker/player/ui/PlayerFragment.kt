@@ -25,6 +25,8 @@ class PlayerFragment : Fragment() {
 
     private val viewModel: PlayerViewModel by inject()
     private lateinit var binding: FragmentPlayerBinding
+    private lateinit var btnPlay : Button
+    private lateinit var plaingProgress: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -64,7 +66,7 @@ class PlayerFragment : Fragment() {
         player_genre.text           = track.primaryGenreName
         player_country.text         = track.country
 
-        viewModel.init(track.previewUrl)
+        viewModel.init(track)
 
         if (player_collectionName.text.isNullOrEmpty()) {
             player_collectionName.visibility = View.GONE
@@ -93,6 +95,9 @@ class PlayerFragment : Fragment() {
         viewModel.observeTrackTimerState().observe(viewLifecycleOwner) {
             plaingProgress.text = it
         }
+        viewModel.observeIsFavoriteState().observe(viewLifecycleOwner) {
+            if (it) btnLike.setBackgroundResource(R.drawable.btn_like_track1) else btnLike.setBackgroundResource(R.drawable.btn_like_track)
+        }
 
         btnBack.setOnClickListener {
             findNavController().navigateUp()
@@ -103,7 +108,7 @@ class PlayerFragment : Fragment() {
         }
 
         btnLike.setOnClickListener {
-            //plaingProgress.text = "like"
+            viewModel.onBtnLikeClicked(track)
         }
     }
 
@@ -116,9 +121,6 @@ class PlayerFragment : Fragment() {
         super.onDestroy()
         viewModel.playerDestroy()
     }
-
-    private lateinit var btnPlay : Button
-    private lateinit var plaingProgress: TextView
 
     fun getCoverArtwork(artworkUrl100: String) = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
 
