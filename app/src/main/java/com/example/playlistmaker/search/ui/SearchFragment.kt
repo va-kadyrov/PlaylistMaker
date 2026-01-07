@@ -53,6 +53,8 @@ class SearchFragment : Fragment() {
     override fun onResume(){
         super.onResume()
         isClickAllowed = true
+        viewModel.repeatSearch()
+        viewModel.searchFielsOnFocus()
     }
 
     override fun onCreateView(

@@ -66,7 +66,8 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     }
 
     fun addTrackToHistory(track: Track){
-        tracksHistoryInteractor.addTrack(track, {})
+        viewModelScope.launch {
+            tracksHistoryInteractor.addTrack(track, {})}
     }
 
     fun clearTracksHistory(){
@@ -76,7 +77,8 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
     }
 
     private fun showHistory(){
-        tracksHistoryInteractor.loadTracks(TracksHistoryConsumerImpl())
+        viewModelScope.launch {
+            tracksHistoryInteractor.loadTracks(TracksHistoryConsumerImpl())}
     }
 
     private fun loadTracks(){

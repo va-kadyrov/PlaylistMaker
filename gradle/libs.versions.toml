@@ -1,7 +1,7 @@
 [versions]
 agp = "8.13.2"
 glide = "4.14.2"
-kotlin = "1.9.0"
+kotlin = "2.0.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -20,6 +20,7 @@ navigationFragmentVersion = "2.5.3"
 navigationUiVersion = "2.5.3"
 gson = "2.13.1"
 coroutines = "1.3.9"
+room = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,7 +43,11 @@ androidx-navigation-fragment-ktx = {group = "androidx.navigation", name = "navig
 androidx-navigation-ui-ktx = {group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiVersion"}
 gson = { group = "com.google.code.gson", name= "gson", version.ref = "gson" }
 coroutines = {group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines"}
+room = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
+room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
+room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt"}

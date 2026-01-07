@@ -2,6 +2,11 @@ package com.example.playlistmaker.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
+import com.example.playlistmaker.player.data.TrackDbConverter
+import com.example.playlistmaker.player.data.db.AppDatabase
+import com.example.playlistmaker.player.data.db.FavoriteTracksRepositoryImpl
+import com.example.playlistmaker.player.domain.db.FavoriteTracksRepository
 import com.example.playlistmaker.search.data.TracksHistoryRepositoryImpl
 import com.example.playlistmaker.search.data.TracksRepositoryImpl
 import com.example.playlistmaker.search.data.network.NetworkClient
@@ -26,17 +31,27 @@ val dataModule = module {
     }
 
     single<TracksRepository> {
-        TracksRepositoryImpl(get())
+        TracksRepositoryImpl(get(), get())
     }
 
     single<TracksHistoryRepository> {
         TracksHistoryRepositoryImpl(get(), get())
     }
 
+    single<FavoriteTracksRepository> {
+        FavoriteTracksRepositoryImpl(get(), get())
+    }
+
     single<NetworkClient> {
         RetrofitNetworkClient()
     }
 
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").build()
+    }
+
     factory { Gson() }
+
+    factory { TrackDbConverter() }
 
 }
