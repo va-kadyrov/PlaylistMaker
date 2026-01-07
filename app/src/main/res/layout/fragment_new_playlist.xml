@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/addingPlaylistFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/settings_back"
+        android:orientation="vertical"
+        tools:context=".media.ui.NewPlaylistFragment">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/adding_playlist_back"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/small_btn_size"
+            android:paddingHorizontal="@dimen/padding_horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="@dimen/large_text"
+            android:fontFamily="@font/ys_display_medium"
+            app:logo="@drawable/btn_back"
+            app:title="@string/adding_playlist_header"
+            app:titleMarginStart="40dp"
+            app:titleTextColor="@color/search_btn_back" />
+
+        <ImageView
+            android:id="@+id/player_albumCover"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintDimensionRatio="W,1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/new_playlist_back"
+            app:layout_constraintBottom_toTopOf="@+id/new_playlist_name"
+            android:src="@drawable/album_cover_empty"/>
+
+        <EditText
+            android:id="@+id/new_playlist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/new_playlist_description"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="12dp"
+            app:layout_constrainedWidth="true"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="@dimen/large_text"
+            android:textColor="@color/search_pl_text"
+            android:text="playlist_name"/>
+
+        <EditText
+            android:id="@+id/new_playlist_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="30dp"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="@dimen/little_text"
+            android:textColor="@color/search_pl_text"
+            android:text="playlist_description"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
