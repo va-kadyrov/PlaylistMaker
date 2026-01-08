@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:background="@null"
+    card_view:cardElevation="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="13dp">
+
+        <ImageView
+            android:id="@+id/playlist_item_img"
+            android:layout_width="@dimen/playlist_item_img"
+            android:layout_height="@dimen/playlist_item_img"
+            android:scaleType="fitCenter"
+            android:src="@drawable/album_cover_empty"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="13dp">
+
+        <TextView
+            android:id="@+id/playlist_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:ellipsize="end"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            tools:text="" />
+
+        <TextView
+            android:id="@+id/playlist_item_tracks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:ellipsize="end"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            tools:text="" />
+    </LinearLayout>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

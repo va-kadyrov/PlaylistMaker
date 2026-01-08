@@ -17,6 +17,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
+import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import org.koin.android.ext.android.inject
@@ -81,24 +82,28 @@ class NewPlaylistFragment : Fragment() {
 
         viewModel.observeNewPlaylistState().observe(viewLifecycleOwner){
             newPlaylistBtn.isEnabled = it.canBeSaved
+            if (it.playlistSaved) {
+                Toast.makeText(requireActivity(), "Плейлист ${viewModel.playlistName} создан", Toast.LENGTH_SHORT).show()
+                 findNavController().popBackStack()
+            }
         }
 
         newPlaylistImageview.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))}
 
         newPlaylistBtn.isEnabled = false //кнопка доступна только после ввода названия плейлиста
-        newPlaylistBtn.setOnClickListener {  }
+        newPlaylistBtn.setOnClickListener {
+            viewModel.savePlaylist()
+        }
 
         newPlaylistName.editText?.doOnTextChanged { inputText, _, _, _ ->
             viewModel.playlistName(inputText.toString())
         }
 
-        newPlaylistDescription.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                viewModel.playlistDescription((newPlaylistDescription.text?:"").toString())
-            }
-            false
+        newPlaylistDescription.editText?.doOnTextChanged { inputText, _, _, _ ->
+            viewModel.playlistDescription(inputText.toString())
         }
+
     }
 
     private fun saveImageToPrivateStorage(uri: Uri, newFileName:String) {

@@ -12,4 +12,8 @@ class PlaylistInteractorImpl(private val repository: PlaylistRepository): Playli
     override suspend fun add(playlist: Playlist) {
         withContext(Dispatchers.IO) { repository.add(playlist) }
     }
+    override suspend fun loadAll(): Flow<List<Playlist>>{
+        return withContext(Dispatchers.IO) { repository.loadAll() }
+
+    }
 }

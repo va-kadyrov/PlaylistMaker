@@ -6,6 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.media.data.Playlist
+import com.example.playlistmaker.media.domain.PlaylistInteractor
+import com.example.playlistmaker.media.ui.PlaylistsState
 import com.example.playlistmaker.player.domain.FavoriteTracksInteractor
 import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
@@ -13,11 +16,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksInteractor): ViewModel() {
+class PlayerViewModel(
+    private val favoriteTracksInteractor: FavoriteTracksInteractor,
+    private val playlistInteractor: PlaylistInteractor): ViewModel() {
 
     private val mediaPlayer = MediaPlayer()
 
-    private val playerFragmentState = PlayerFragmentState(STATE_DEFAULT, "00:00", false)
+    private val playerFragmentState = PlayerFragmentState(STATE_DEFAULT, "00:00", false, emptyList<Playlist>().toMutableList())
     private val playerFragmentStateLD = MutableLiveData<PlayerFragmentState>(playerFragmentState)
     fun observePlayerFragmentState(): LiveData<PlayerFragmentState> = playerFragmentStateLD
 
@@ -94,6 +99,13 @@ class PlayerViewModel(private val favoriteTracksInteractor: FavoriteTracksIntera
             playerFragmentState.isFavorite = true
         }
         playerFragmentStateLD.postValue(playerFragmentState)
+    }
+
+    fun loadPlaylists(){
+        viewModelScope.launch {
+            playerFragmentState.playlists.clear()
+            playlistInteractor.loadAll().collect { playlists -> playerFragmentState.playlists.addAll(playlists) }
+        }
     }
 
     private fun pausePlayer() {

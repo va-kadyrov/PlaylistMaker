@@ -19,6 +19,7 @@ import java.util.Locale
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.search.domain.Track
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
 
 class PlayerFragment : Fragment() {
@@ -52,11 +53,19 @@ class PlayerFragment : Fragment() {
         val player_country = binding.playerCountry
         val player_albumCover = binding.playerAlbumCover
 
-        val btnBack = binding.playerTbBack
-        val btnLike = binding.playerBtnLike
+        val btnBack     = binding.playerTbBack
+        val btnLike     = binding.playerBtnLike
+        val btnAddTrack = binding.playerBtnAddTrack
+
+        val playerBottomSheet = binding.playerBottomSheet
+        val bottomSheetBehavior = BottomSheetBehavior.from(playerBottomSheet)
+
         btnPlay = binding.playerBtnPlay
         plaingProgress = binding.playerPlayingProgress
         btnPlay.isEnabled = false
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        btnAddTrack.setOnClickListener { bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED }
 
         player_trackName.text       = track.trackName
         player_artistName.text      = track.artistName
