@@ -5,7 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentFavoriteTracksBinding
+import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import kotlin.getValue
 
@@ -25,6 +28,7 @@ class PlaylistsFragment : Fragment() {
 //    private var param2: String? = null
 
     val viewModel by activityViewModel<PlaylistsViewModel>()
+    private lateinit var binding: FragmentPlaylistsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +43,15 @@ class PlaylistsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_playlists, container, false)
+        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.btnNewPlaylist.setOnClickListener {
+            findNavController().navigate(R.id.action_mediaFragment_to_newPlaylistFragment)
+        }
     }
 
     companion object {
