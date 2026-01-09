@@ -13,5 +13,6 @@
     <dimen name="little_text">14sp</dimen>
     <dimen name="big_image">360dp</dimen>
     <dimen name="little_text2">13sp</dimen>
-    <dimen name="playlist_item_img">120dp</dimen>
+    <dimen name="playlist_item_img">160dp</dimen>
+    <dimen name="playlist_item_img_small">45dp</dimen>
 </resources>

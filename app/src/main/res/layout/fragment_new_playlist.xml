@@ -19,7 +19,7 @@
         app:logo="@drawable/btn_back"
         app:title="@string/new_playlist_header"
         app:titleMarginStart="40dp"
-        app:titleTextColor="@color/search_btn_back"
+        app:titleTextColor="@color/almostblack_white"
     />
 
     <ImageView
@@ -50,8 +50,8 @@
         android:ellipsize="end"
         android:fontFamily="@font/ys_display_medium"
         android:singleLine="true"
-        android:textColor="@color/search_pl_text"
-        android:textSize="@dimen/large_text"
+        android:textColor="@color/almostblack_white"
+        android:textSize="@dimen/middle_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/new_playlist_imageview"
@@ -72,15 +72,17 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="246dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/new_playlist_name"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constrainedWidth="true"
         android:ellipsize="end"
         android:singleLine="true"
         android:fontFamily="@font/ys_display_medium"
-        android:textSize="@dimen/large_text"
-        android:textColor="@color/search_pl_text"
+        android:textSize="@dimen/middle_text"
+        android:textColor="@color/almostblack_white"
         android:hint="@string/new_playlist_description"
         android:imeOptions="actionDone">
         <com.google.android.material.textfield.TextInputEditText
@@ -98,6 +100,8 @@
         android:layout_marginHorizontal="17dp"
         android:layout_marginBottom="32dp"
         android:text="@string/new_playlist_btn"
+        android:textColor="@color/white"
+        android:background="@drawable/new_playlist_btn_create"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -12,12 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingHorizontal="13dp">
+        android:paddingStart="13dp"
+        android:paddingEnd="44dp">
 
         <ImageView
             android:id="@+id/playlist_item_img"
-            android:layout_width="@dimen/playlist_item_img"
-            android:layout_height="@dimen/playlist_item_img"
+            android:layout_width="@dimen/playlist_item_img_small"
+            android:layout_height="@dimen/playlist_item_img_small"
             android:scaleType="fitCenter"
             android:src="@drawable/album_cover_empty"/>
 
@@ -25,29 +26,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="13dp">
+        android:paddingStart="8dp">
 
         <TextView
             android:id="@+id/playlist_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:layout_marginBottom="14dp"
+            android:layout_marginBottom="1dp"
+            android:textColor="@color/black_white"
             android:ellipsize="end"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:textStyle="normal"
-            tools:text="" />
+            android:maxLines="1"
+            tools:text="Title" />
 
         <TextView
             android:id="@+id/playlist_item_tracks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
             android:layout_marginBottom="14dp"
+            android:textColor="@color/gray_white_text"
             android:ellipsize="end"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="normal"
-            tools:text="" />
+            android:maxLines="1"
+            tools:text="Description this text so long and I can see how it try to go second line" />
     </LinearLayout>
     </LinearLayout>
 

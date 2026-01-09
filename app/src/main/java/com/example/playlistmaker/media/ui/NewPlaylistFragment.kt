@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.toColor
 import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
@@ -87,6 +88,13 @@ class NewPlaylistFragment : Fragment() {
                 showWarningDialog()
             } else if (it.goBack){
                 findNavController().popBackStack()
+            }
+            if (it.canBeSaved) {
+                newPlaylistBtn.isEnabled
+                newPlaylistBtn.setBackgroundColor(getResources().getColor(R.color.blue))
+            } else {
+                newPlaylistBtn.isEnabled
+                newPlaylistBtn.setBackgroundColor(getResources().getColor(R.color.gray))
             }
             newPlaylistBtn.isEnabled = it.canBeSaved
             if (it.playlistSaved) {
