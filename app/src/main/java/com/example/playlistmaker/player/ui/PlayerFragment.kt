@@ -197,12 +197,12 @@ class PlayerFragment : Fragment() {
         fun bind(playlist: Playlist) {
             nameView.text = playlist.name
             tracksView.text = trackCountsToString(playlist.trackCounts)
-            if (playlist.filePath.isNotEmpty()) {
-                Glide.with(itemView)
-                    .load(playlist.filePath)
-                    .transform(FitCenter(), RoundedCorners(2))
-                    .into(imageView)
-            }}
+            Glide.with(itemView)
+                .load(playlist.filePath)
+                .transform(FitCenter(), RoundedCorners(2))
+                .placeholder(R.drawable.album_cover_empty)
+                .into(imageView)
+            }
         private fun trackCountsToString(trackCounts: Int): String {
             when {
                 trackCounts in 11..20 -> return "$trackCounts треков"

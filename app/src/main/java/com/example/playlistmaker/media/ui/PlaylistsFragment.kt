@@ -97,12 +97,11 @@ class PlaylistsFragment : Fragment() {
         fun bind(playlist: Playlist) {
             nameView.text = playlist.name
             tracksView.text = trackCountsToString(playlist.trackCounts)
-            if (playlist.filePath.isNotEmpty()){
-                Glide.with(itemView)
+            Glide.with(itemView)
                 .load(playlist.filePath)
                 .transform(FitCenter(), RoundedCorners(8))
                 .placeholder(R.drawable.album_cover_empty)
-                .into(imageView)}
+                .into(imageView)
         }
 
         private fun trackCountsToString(trackCounts: Int): String {
