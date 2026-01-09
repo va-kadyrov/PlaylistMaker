@@ -196,15 +196,20 @@ class PlayerFragment : Fragment() {
 
         fun bind(playlist: Playlist) {
             nameView.text = playlist.name
-            tracksView.text = "${playlist.trackCounts} треков"
-            if (playlist.filePath.isNotEmpty()){
-                imageView.setImageURI(playlist.filePath.toUri())
+            tracksView.text = trackCountsToString(playlist.trackCounts)
+            if (playlist.filePath.isNotEmpty()) {
+                Glide.with(itemView)
+                    .load(playlist.filePath)
+                    .transform(FitCenter(), RoundedCorners(2))
+                    .into(imageView)
+            }}
+        private fun trackCountsToString(trackCounts: Int): String {
+            when {
+                trackCounts in 11..20 -> return "$trackCounts треков"
+                trackCounts % 10 == 1 -> return "$trackCounts трек"
+                trackCounts % 10 in 2..4 -> return "$trackCounts трека"
+                else -> return "$trackCounts треков"
             }
-//            Glide.with(itemView)
-//                .load(track.artworkUrl100)
-//                .transform(FitCenter(), RoundedCorners(6))
-//                .placeholder(R.drawable.track_empty_img)
-//                .into(imgView)
         }
     }
 

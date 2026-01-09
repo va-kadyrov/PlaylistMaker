@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="3dp"
     android:background="@null"
-    card_view:cardElevation="5dp">
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +17,7 @@
             android:id="@+id/playlist_item_img"
             android:layout_width="@dimen/playlist_item_img"
             android:layout_height="@dimen/playlist_item_img"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:src="@drawable/album_cover_empty"/>
 
         <TextView
