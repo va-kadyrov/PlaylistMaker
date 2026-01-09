@@ -15,9 +15,9 @@ interface TrackDao {
     @Delete(entity = TrackEntity::class)
     suspend fun delete(track: TrackEntity)
 
-    @Query("SELECT * FROM favorite_tracks ORDER BY timeStamp DESC")
+    @Query("SELECT * FROM tracks ORDER BY timeStamp DESC")
     suspend fun getAll(): List<TrackEntity>
 
-    @Query("SELECT trackId FROM favorite_tracks")
+    @Query("SELECT trackId FROM tracks")
     fun getIds(): List<Long>
 }

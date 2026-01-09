@@ -1,0 +1,30 @@
+package com.example.playlistmaker.player.domain
+
+import com.example.playlistmaker.player.domain.db.TracksRepository
+import com.example.playlistmaker.search.domain.Track
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
+
+class TracksInteractorImpl(private val repository: TracksRepository): TracksInteractor {
+
+    override suspend fun addTrack(track: Track): Boolean {
+        return withContext(Dispatchers.IO) { repository.addTrack(track) }
+    }
+
+    override suspend fun addFavoriteTrack(track: Track) {
+        withContext(Dispatchers.IO) { repository.addFavoriteTrack(track) }
+    }
+
+    override suspend fun deleteTrack(track: Track) {
+        withContext(Dispatchers.IO) { repository.deleteTrack(track) }
+    }
+
+    override suspend fun deleteFavoriteTrack(track: Track) {
+        withContext(Dispatchers.IO) { repository.deleteFavoriteTrack(track) }
+    }
+
+    override suspend fun getAllFavoriteTracks(): Flow<List<Track>> {
+        return withContext(Dispatchers.IO) { repository.getAllFavoriteTracks() }
+    }
+}

@@ -36,4 +36,12 @@
     <string name="new_playlist">Новый плейлист</string>
     <string name="no_favorite_tracks">Ваша медиатека пуста</string>
     <string name="no_playlists">Вы не создали ни одного плейлиста</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="new_playlist_header">Новый плейлист</string>
+    <string name="new_playlist_name">Название</string>
+    <string name="new_playlist_description">Описание</string>
+    <string name="new_playlist_btn">Создать</string>
+    <string name="covers_path">playlists covers</string>
+    <string name="new_playlist_warning_dialog_title">Завершить создание плейлиста?</string>
 </resources>

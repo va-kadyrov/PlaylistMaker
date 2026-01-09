@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 class TracksHistoryRepositoryImpl (private val sharedPreferences: SharedPreferences, private val appDatabase: AppDatabase) : TracksHistoryRepository {
 
     override suspend fun loadTracks(): List<Track> {
-        val favoriteTracksIds = withContext(Dispatchers.IO) { appDatabase.trackDao().getIds() }
+        val favoriteTracksIds = withContext(Dispatchers.IO) { appDatabase.favoriteTrackDao().getIds() }
         try{
             val json = sharedPreferences.getString(PREF_KEY, "")
             val tracks = Gson().fromJson(json, Array<Track>::class.java).toMutableList()
