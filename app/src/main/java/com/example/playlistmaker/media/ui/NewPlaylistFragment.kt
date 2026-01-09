@@ -91,10 +91,8 @@ class NewPlaylistFragment : Fragment() {
             }
             if (it.canBeSaved) {
                 newPlaylistBtn.isEnabled
-                newPlaylistBtn.setBackgroundColor(getResources().getColor(R.color.blue))
             } else {
                 newPlaylistBtn.isEnabled
-                newPlaylistBtn.setBackgroundColor(getResources().getColor(R.color.gray))
             }
             newPlaylistBtn.isEnabled = it.canBeSaved
             if (it.playlistSaved) {
