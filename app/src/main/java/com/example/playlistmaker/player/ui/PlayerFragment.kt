@@ -11,13 +11,18 @@ import com.google.gson.Gson
 import android.icu.text.SimpleDateFormat
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import java.util.Date
 import java.util.Locale
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
+import com.example.playlistmaker.media.data.Playlist
 import com.example.playlistmaker.search.domain.Track
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
@@ -59,13 +64,22 @@ class PlayerFragment : Fragment() {
 
         val playerBottomSheet = binding.playerBottomSheet
         val bottomSheetBehavior = BottomSheetBehavior.from(playerBottomSheet)
+        val playerPlaylistsRecView = binding.playerPlaylistsRecView
+        val btnNewPlaylist2 = binding.btnNewPlaylist2
+
+        val playlists = mutableListOf<Playlist>()
+        val playerPlaylistsAdapter = PlaylistsAdapter(playlists)
 
         btnPlay = binding.playerBtnPlay
         plaingProgress = binding.playerPlayingProgress
         btnPlay.isEnabled = false
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-        btnAddTrack.setOnClickListener { bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED }
+        playerPlaylistsRecView.adapter = playerPlaylistsAdapter
+
+        btnAddTrack.setOnClickListener {
+            viewModel.loadPlaylists()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED }
 
         player_trackName.text       = track.trackName
         player_artistName.text      = track.artistName
@@ -87,22 +101,64 @@ class PlayerFragment : Fragment() {
                 .placeholder(R.drawable.album_cover_empty).into(player_albumCover)
 
         viewModel.observePlayerFragmentState().observe(viewLifecycleOwner){
-            when(it.playerStatus) {
-                STATE_DEFAULT -> {
-                    btnPlay.setBackgroundResource(R.drawable.btn_play_track)
-                    btnPlay.isEnabled = false
+            when(it.action) {
+                ACTION_PLAYER_STATUS -> {
+                    when(it.playerStatus) {
+                        STATE_DEFAULT -> {
+                            btnPlay.setBackgroundResource(R.drawable.btn_play_track)
+                            btnPlay.isEnabled = false
+                        }
+                        STATE_PLAYING -> {
+                            btnPlay.setBackgroundResource(R.drawable.btn_pause)
+                        }
+                        STATE_PREPARED, STATE_PAUSED -> {
+                            btnPlay.setBackgroundResource(R.drawable.btn_play_track)
+                            btnPlay.isEnabled = true
+                }}}
+
+                ACTION_TIMER_UPDATE -> {
+                    plaingProgress.text = it.trackTimeProgress
                 }
-                STATE_PLAYING -> {
-                    btnPlay.setBackgroundResource(R.drawable.btn_pause)
+
+                ACTION_PLAYLISTS_UPDATE -> {
+                    playlists.clear()
+                    playlists.addAll(it.playlists)
+                    playerPlaylistsAdapter.notifyDataSetChanged()
                 }
-                STATE_PREPARED, STATE_PAUSED -> {
-                    btnPlay.setBackgroundResource(R.drawable.btn_play_track)
-                    btnPlay.isEnabled = true
+
+                ACTION_IS_FAVORITE -> {
+                    if (it.isFavorite) {
+                        btnLike.setBackgroundResource(R.drawable.btn_like_track1)
+                    } else btnLike.setBackgroundResource(R.drawable.btn_like_track)
+                }
+
+                ACTION_TRACK_IN_PLAYLIST -> {
+                    when(it.trackInPlaylist) {
+                        TRACK_ADDED_IN_PL_SUCCESSFULLY -> {
+                            Toast.makeText(requireActivity(), "Добавлено в плейлист ${it.playlistName}", Toast.LENGTH_SHORT).show()
+                            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                        }
+                        TRACK_ALREADY_IN_PLAYLIST -> {
+                            Toast.makeText(requireActivity(), "Трек уже добавлен в плейлист ${it.playlistName}", Toast.LENGTH_SHORT).show() }
+                    }
                 }
             }
-            plaingProgress.text = it.trackTimeProgress
-            if (it.isFavorite) btnLike.setBackgroundResource(R.drawable.btn_like_track1) else btnLike.setBackgroundResource(R.drawable.btn_like_track)
         }
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
 
         btnBack.setOnClickListener {
             findNavController().navigateUp()
@@ -114,6 +170,10 @@ class PlayerFragment : Fragment() {
 
         btnLike.setOnClickListener {
             viewModel.onBtnLikeClicked(track)
+        }
+
+        btnNewPlaylist2.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
         }
     }
 
@@ -129,11 +189,58 @@ class PlayerFragment : Fragment() {
 
     fun getCoverArtwork(artworkUrl100: String) = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
 
+    class PlaylistsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        private val imageView: ImageView = itemView.findViewById(R.id.playlist_item_img)
+        private val nameView: TextView = itemView.findViewById(R.id.playlist_item_name)
+        private val tracksView: TextView = itemView.findViewById(R.id.playlist_item_tracks)
+
+        fun bind(playlist: Playlist) {
+            nameView.text = playlist.name
+            tracksView.text = "${playlist.trackCounts} треков"
+            if (playlist.filePath.isNotEmpty()){
+                imageView.setImageURI(playlist.filePath.toUri())
+            }
+//            Glide.with(itemView)
+//                .load(track.artworkUrl100)
+//                .transform(FitCenter(), RoundedCorners(6))
+//                .placeholder(R.drawable.track_empty_img)
+//                .into(imgView)
+        }
+    }
+
+    inner class PlaylistsAdapter(private val items: List<Playlist>): RecyclerView.Adapter<PlaylistsViewHolder> () {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistsViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.playlist_bottom_recycler_layout, parent, false)
+            return PlaylistsViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: PlaylistsViewHolder, position: Int) {
+            holder.bind(items[position])
+            holder.itemView.setOnClickListener {
+                viewModel.addTrackToPlaylist(items[position])
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return items.size
+        }
+    }
+
     companion object {
         private const val STATE_DEFAULT = 0
         private const val STATE_PREPARED = 1
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
+
+        private const val TRACK_ADDED_IN_PL_SUCCESSFULLY = 1
+        private const val TRACK_ALREADY_IN_PLAYLIST = 2
+
+        private const val ACTION_PLAYER_STATUS      = 1
+        private const val ACTION_TIMER_UPDATE       = 2
+        private const val ACTION_PLAYLISTS_UPDATE   = 3
+        private const val ACTION_IS_FAVORITE        = 4
+        private const val ACTION_TRACK_IN_PLAYLIST  = 5
 
         private const val TRACK_JSON = "track_json"
 

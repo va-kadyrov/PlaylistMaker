@@ -11,6 +11,6 @@ interface PlaylistDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(playlist: PlaylistEntity)
 
-    @Query("SELECT * FROM playlists ORDER BY timeStamp DESC")
+    @Query("SELECT * FROM playlists ORDER BY id")
     suspend fun getAll(): List<PlaylistEntity>
 }

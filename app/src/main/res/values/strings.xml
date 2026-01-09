@@ -43,4 +43,5 @@
     <string name="new_playlist_description">Описание</string>
     <string name="new_playlist_btn">Создать</string>
     <string name="covers_path">playlists covers</string>
+    <string name="new_playlist_warning_dialog_title">Завершить создание плейлиста?</string>
 </resources>

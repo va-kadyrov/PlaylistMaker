@@ -7,12 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.api.TracksConsumer
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
-import com.example.playlistmaker.search.domain.api.TracksInteractor
+import com.example.playlistmaker.search.domain.api.TracksNtInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SearchViewModel(private val tracksInteractor: TracksInteractor, private val tracksHistoryInteractor: TracksHistoryInteractor): ViewModel() {
+class SearchViewModel(private val tracksNtInteractor: TracksNtInteractor, private val tracksHistoryInteractor: TracksHistoryInteractor): ViewModel() {
 
     private var searchJob: Job? = null
 
@@ -85,7 +85,7 @@ class SearchViewModel(private val tracksInteractor: TracksInteractor, private va
         tracksStateLiveData.postValue(TracksState(true,false, false, "", emptyList<Track>().toMutableList()))
         lastQuery = searchString
         viewModelScope.launch {
-            tracksInteractor.loadTracks(searchString).collect { tracks ->
+            tracksNtInteractor.loadTracks(searchString).collect { tracks ->
                 tracksStateLiveData.postValue(TracksState(
                     false,tracks.isEmpty(), false, "", (tracks?:emptyList()).toMutableList())
                 )

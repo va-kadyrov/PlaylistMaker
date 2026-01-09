@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class NewPlaylistViewModel(val playlistInteractor: PlaylistInteractor): ViewModel() {
 
-    private val newPlaylistState = MutableLiveData(NewPlaylistState(false, false, false))
+    private val newPlaylistState = MutableLiveData(NewPlaylistState(false, false))
     fun observeNewPlaylistState(): LiveData<NewPlaylistState> = newPlaylistState
 
     var playlistName = ""
@@ -19,7 +19,7 @@ class NewPlaylistViewModel(val playlistInteractor: PlaylistInteractor): ViewMode
 
     fun playlistName(name: String) {
         playlistName = name
-        newPlaylistState.value = NewPlaylistState((playlistName.isNotBlank() or playlistDescription.isNotBlank() or playlistFilepath.isNotBlank()), playlistName.isNotBlank(), false)
+        newPlaylistState.value = NewPlaylistState(playlistName.isNotBlank(), false)
     }
 
     fun playlistDescription(description: String) {
@@ -31,7 +31,15 @@ class NewPlaylistViewModel(val playlistInteractor: PlaylistInteractor): ViewMode
     fun savePlaylist() {
         viewModelScope.launch {
             playlistInteractor.add(Playlist(0, playlistName, playlistDescription, playlistFilepath, emptyList<Long>().toMutableList(), 0))
-            newPlaylistState.value = NewPlaylistState((playlistName.isNotBlank() or playlistDescription.isNotBlank() or playlistFilepath.isNotBlank()), playlistName.isNotBlank(), true)
+            newPlaylistState.value = NewPlaylistState(playlistName.isNotBlank(), true)
+        }
+    }
+
+    fun tryBack(){
+        if (playlistName.isNotBlank() or playlistDescription.isNotBlank() or playlistFilepath.isNotBlank()) {
+            newPlaylistState.value = NewPlaylistState(playlistName.isNotBlank(), false, true, false)
+        } else {
+            newPlaylistState.value = NewPlaylistState(playlistName.isNotBlank(), false, false, true)
         }
     }
 }

@@ -11,9 +11,8 @@ class PlaylistDbConverter {
             playlist.filePath, gson.toJson(playlist.tracks), System.currentTimeMillis())
     }
     fun map(playlist: PlaylistEntity): Playlist {
-        val _tracks = gson.fromJson(playlist.tracks, MutableList::class.java)
-        val tracks = emptyList<Long>().toMutableList()
-        _tracks.forEach { trackId -> tracks.add(trackId as Long) }
+        val _tracks = gson.fromJson(playlist.tracks, Array<Long>::class.java)
+        val tracks = _tracks.toMutableList()
         return Playlist(playlist.id, playlist.name, playlist.description,
             playlist.filePath, tracks, tracks.count())
     }

@@ -20,6 +20,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import java.io.File
 import java.io.FileOutputStream
@@ -63,6 +64,7 @@ class NewPlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val newPlaylistBack         = binding.newPlaylistBack
         val newPlaylistBtn          = binding.newPlaylistBtn
         val newPlaylistName         = binding.newPlaylistName
         val newPlaylistDescription  = binding.newPlaylistDescription
@@ -81,6 +83,11 @@ class NewPlaylistFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         viewModel.observeNewPlaylistState().observe(viewLifecycleOwner){
+            if (it.showWarningDialog ){
+                showWarningDialog()
+            } else if (it.goBack){
+                findNavController().popBackStack()
+            }
             newPlaylistBtn.isEnabled = it.canBeSaved
             if (it.playlistSaved) {
                 Toast.makeText(requireActivity(), "Плейлист ${viewModel.playlistName} создан", Toast.LENGTH_SHORT).show()
@@ -94,6 +101,10 @@ class NewPlaylistFragment : Fragment() {
         newPlaylistBtn.isEnabled = false //кнопка доступна только после ввода названия плейлиста
         newPlaylistBtn.setOnClickListener {
             viewModel.savePlaylist()
+        }
+
+        newPlaylistBack.setOnClickListener {
+            viewModel.tryBack()
         }
 
         newPlaylistName.editText?.doOnTextChanged { inputText, _, _, _ ->
@@ -116,18 +127,24 @@ class NewPlaylistFragment : Fragment() {
         val outputStream = FileOutputStream(newFile)
         outputStream.write(inputStream?.readBytes())
         binding.newPlaylistImageview.setImageURI(newFile.toUri())
-        Log.d("myTag", "filepath = "+newFile.toUri().toString())
         viewModel.playlistFilepath(newFile.toUri().toString())
     }
 
     val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            showWarningToast()
+            viewModel.tryBack()
         }
     }
 
-    private fun showWarningToast() {
-        Toast.makeText(requireActivity(), "Нажмите ещё раз, чтобы перейти на предыдущий экран", Toast.LENGTH_SHORT).show()
+    private fun showWarningDialog() {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.new_playlist_warning_dialog_title) // Заголовок диалога
+            .setMessage(R.string.new_playlist_warning_dialog_title) // Описание диалога
+            .setNeutralButton("Отмена") { dialog, which ->
+            }
+            .setPositiveButton("Завершить") { dialog, which -> findNavController().popBackStack()
+            }
+            .show()
     }
 
     companion object {
