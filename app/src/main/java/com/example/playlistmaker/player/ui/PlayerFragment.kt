@@ -18,6 +18,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import java.util.Date
 import java.util.Locale
 import com.example.playlistmaker.R
@@ -199,7 +200,7 @@ class PlayerFragment : Fragment() {
             tracksView.text = trackCountsToString(playlist.trackCounts)
             Glide.with(itemView)
                 .load(playlist.filePath)
-                .transform(FitCenter(), RoundedCorners(2))
+                .transform(CenterCrop(), RoundedCorners(2))
                 .placeholder(R.drawable.album_cover_empty)
                 .into(imageView)
             }
