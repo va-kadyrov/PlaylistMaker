@@ -44,4 +44,6 @@
     <string name="new_playlist_btn">Создать</string>
     <string name="covers_path">playlists covers</string>
     <string name="new_playlist_warning_dialog_title">Завершить создание плейлиста?</string>
+    <string name="want_to_delete_track">Хотите удалить трек?</string>
+    <string name="not_tracks_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
 </resources>

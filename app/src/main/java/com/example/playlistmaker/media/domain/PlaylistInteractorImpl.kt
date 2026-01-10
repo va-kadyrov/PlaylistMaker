@@ -13,4 +13,7 @@ class PlaylistInteractorImpl(private val repository: PlaylistRepository): Playli
         return withContext(Dispatchers.IO) { repository.loadAll() }
 
     }
+    override suspend fun loadInfo(id: Long): Flow<Playlist>{
+        return withContext(Dispatchers.IO) { repository.loadInfo(id) }
+    }
 }

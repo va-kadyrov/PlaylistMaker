@@ -30,7 +30,7 @@ class NewPlaylistViewModel(val playlistInteractor: PlaylistInteractor): ViewMode
 
     fun savePlaylist() {
         viewModelScope.launch {
-            playlistInteractor.add(Playlist(0, playlistName, playlistDescription, playlistFilepath, emptyList<Long>().toMutableList(), 0))
+            playlistInteractor.add(Playlist(0, playlistName, playlistDescription, playlistFilepath, emptyList<Long>().toMutableList(), 0, 0))
             newPlaylistState.value = NewPlaylistState(playlistName.isNotBlank(), true)
         }
     }

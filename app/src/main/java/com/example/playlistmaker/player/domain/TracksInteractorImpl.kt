@@ -27,4 +27,9 @@ class TracksInteractorImpl(private val repository: TracksRepository): TracksInte
     override suspend fun getAllFavoriteTracks(): Flow<List<Track>> {
         return withContext(Dispatchers.IO) { repository.getAllFavoriteTracks() }
     }
+
+    override suspend fun getTrackInfo(id: Long): Flow<Track> {
+        return withContext(Dispatchers.IO) { repository.getTrackInfo(id) }
+    }
+
 }
