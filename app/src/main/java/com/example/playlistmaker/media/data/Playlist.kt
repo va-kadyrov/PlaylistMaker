@@ -6,5 +6,6 @@ data class Playlist(
     val description: String,
     val filePath: String,
     var tracks: MutableList<Long>,
-    var trackCounts: Int
+    var trackCounts: Int,
+    var totalDuration: Long
 )

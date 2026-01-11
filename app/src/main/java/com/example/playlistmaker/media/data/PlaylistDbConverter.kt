@@ -14,7 +14,7 @@ class PlaylistDbConverter {
         val _tracks = gson.fromJson(playlist.tracks, Array<Long>::class.java)
         val tracks = _tracks.toMutableList()
         return Playlist(playlist.id, playlist.name, playlist.description,
-            playlist.filePath, tracks, tracks.count())
+            playlist.filePath, tracks, tracks.count(), 0)
     }
 
 }

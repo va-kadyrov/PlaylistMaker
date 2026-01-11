@@ -19,6 +19,10 @@ import androidx.core.graphics.toColor
 import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -38,20 +42,10 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AddingPlaylistFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NewPlaylistFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var binding: FragmentNewPlaylistBinding
-    private val viewModel: NewPlaylistViewModel by inject()
+open class NewPlaylistFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var binding: FragmentNewPlaylistBinding
+    open val viewModel: NewPlaylistViewModel by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,7 +90,7 @@ class NewPlaylistFragment : Fragment() {
             }
             newPlaylistBtn.isEnabled = it.canBeSaved
             if (it.playlistSaved) {
-                Toast.makeText(requireActivity(), "Плейлист ${viewModel.playlistName} создан", Toast.LENGTH_SHORT).show()
+                toastCreatePlaylist()
                  findNavController().popBackStack()
             }
         }
@@ -132,11 +126,17 @@ class NewPlaylistFragment : Fragment() {
         val inputStream = requireActivity().contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(newFile)
         outputStream.write(inputStream?.readBytes())
-        binding.newPlaylistImageview.setImageURI(newFile.toUri())
+        Glide.with(requireView())
+            .load(newFile)
+            .transform(CenterCrop(), RoundedCorners(8))
+            .placeholder(R.drawable.new_playlist_img)
+            .into(binding.newPlaylistImageview)
+            binding.newPlaylistImageview.setBackgroundResource(0)
+
         viewModel.playlistFilepath(newFile.toUri().toString())
     }
 
-    val onBackPressedCallback = object : OnBackPressedCallback(true) {
+    open val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             viewModel.tryBack()
         }
@@ -151,6 +151,14 @@ class NewPlaylistFragment : Fragment() {
             .setPositiveButton("Завершить") { dialog, which -> findNavController().popBackStack()
             }
             .show()
+    }
+
+    open fun toastCreatePlaylist() {
+        Toast.makeText(
+            requireActivity(),
+            "Плейлист ${viewModel.playlistName} создан",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     companion object {
