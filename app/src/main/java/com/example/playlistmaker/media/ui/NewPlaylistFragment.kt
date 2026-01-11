@@ -38,19 +38,13 @@ private const val ARG_PARAM2 = "param2"
  * Use the [AddingPlaylistFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NewPlaylistFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-    private lateinit var binding: FragmentNewPlaylistBinding
-    private val viewModel: NewPlaylistViewModel by inject()
+open class NewPlaylistFragment : Fragment() {
+
+    lateinit var binding: FragmentNewPlaylistBinding
+    open val viewModel: NewPlaylistViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -96,7 +90,7 @@ class NewPlaylistFragment : Fragment() {
             }
             newPlaylistBtn.isEnabled = it.canBeSaved
             if (it.playlistSaved) {
-                Toast.makeText(requireActivity(), "Плейлист ${viewModel.playlistName} создан", Toast.LENGTH_SHORT).show()
+                toastCreatePlaylist()
                  findNavController().popBackStack()
             }
         }
@@ -136,7 +130,7 @@ class NewPlaylistFragment : Fragment() {
         viewModel.playlistFilepath(newFile.toUri().toString())
     }
 
-    val onBackPressedCallback = object : OnBackPressedCallback(true) {
+    open val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             viewModel.tryBack()
         }
@@ -151,6 +145,14 @@ class NewPlaylistFragment : Fragment() {
             .setPositiveButton("Завершить") { dialog, which -> findNavController().popBackStack()
             }
             .show()
+    }
+
+    open fun toastCreatePlaylist() {
+        Toast.makeText(
+            requireActivity(),
+            "Плейлист ${viewModel.playlistName} создан",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     companion object {
