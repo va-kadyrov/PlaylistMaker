@@ -30,6 +30,10 @@ class TracksRepositoryImpl(
         appDatabase.trackDao().delete(trackDbConverter.map(track))
     }
 
+    override suspend fun deleteTrack(id: Long) {
+        appDatabase.trackDao().delete(id)
+    }
+
     override suspend fun deleteFavoriteTrack(track: Track) {
         appDatabase.favoriteTrackDao().delete(favoriteTrackDbConverter.map(track))
     }

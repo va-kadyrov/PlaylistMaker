@@ -8,9 +8,9 @@ import com.example.playlistmaker.media.data.Playlist
 import com.example.playlistmaker.media.domain.PlaylistInteractor
 import kotlinx.coroutines.launch
 
-class NewPlaylistViewModel(val playlistInteractor: PlaylistInteractor): ViewModel() {
+open class NewPlaylistViewModel(val playlistInteractor: PlaylistInteractor): ViewModel() {
 
-    private val newPlaylistState = MutableLiveData(NewPlaylistState(false, false))
+    val newPlaylistState = MutableLiveData(NewPlaylistState(false, false))
     fun observeNewPlaylistState(): LiveData<NewPlaylistState> = newPlaylistState
 
     var playlistName = ""
@@ -28,14 +28,14 @@ class NewPlaylistViewModel(val playlistInteractor: PlaylistInteractor): ViewMode
     fun playlistFilepath(filepath: String) {
         playlistFilepath = filepath}
 
-    fun savePlaylist() {
+    open fun savePlaylist() {
         viewModelScope.launch {
             playlistInteractor.add(Playlist(0, playlistName, playlistDescription, playlistFilepath, emptyList<Long>().toMutableList(), 0, 0))
             newPlaylistState.value = NewPlaylistState(playlistName.isNotBlank(), true)
         }
     }
 
-    fun tryBack(){
+    open fun tryBack(){
         if (playlistName.isNotBlank() or playlistDescription.isNotBlank() or playlistFilepath.isNotBlank()) {
             newPlaylistState.value = NewPlaylistState(playlistName.isNotBlank(), false, true, false)
         } else {

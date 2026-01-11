@@ -46,4 +46,8 @@
     <string name="new_playlist_warning_dialog_title">Завершить создание плейлиста?</string>
     <string name="want_to_delete_track">Хотите удалить трек?</string>
     <string name="not_tracks_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="btn_share">Поделиться</string>
+    <string name="btn_edit_playlist">Редактировать информацию</string>
+    <string name="btn_delete_playlist">Удалить плейлист</string>
+    <string name="want_to_delete_playlist">Хотите удалить плейлист</string>
 </resources>

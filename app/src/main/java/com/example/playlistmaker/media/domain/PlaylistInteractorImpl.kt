@@ -16,4 +16,17 @@ class PlaylistInteractorImpl(private val repository: PlaylistRepository): Playli
     override suspend fun loadInfo(id: Long): Flow<Playlist>{
         return withContext(Dispatchers.IO) { repository.loadInfo(id) }
     }
+    override suspend fun delete(id: Long) {
+        withContext(Dispatchers.IO) { repository.delete(id) }
+    }
+
+    override suspend fun trackIsIdle(idTrack: Long): Boolean{
+        var res = true
+        repository.loadAll().collect{
+            playlists -> playlists.forEach {
+                if (it.tracks.contains(idTrack)) res = false
+            }
+        }
+        return res
+    }
 }

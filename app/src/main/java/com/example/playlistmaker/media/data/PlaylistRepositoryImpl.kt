@@ -22,6 +22,10 @@ class PlaylistRepositoryImpl(
         emit(playlistDbConverter.map(appDatabase.playlistDao().getInfo(id)))
     }
 
+    override suspend fun delete(id: Long) {
+        appDatabase.playlistDao().delete(id)
+    }
+
     private fun convert(playlists: List<PlaylistEntity>): List<Playlist> {
         return playlists.map {playlist -> playlistDbConverter.map(playlist)}
     }

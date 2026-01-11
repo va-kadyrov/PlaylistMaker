@@ -1,5 +1,6 @@
 package com.example.playlistmaker.media.ui
 
+import android.content.Intent
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -20,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistInfoBinding
 import com.example.playlistmaker.main.ui.TAG
+import com.example.playlistmaker.media.data.Playlist
 import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.ui.SearchFragment.TracksViewHolder
@@ -37,11 +41,14 @@ class PlaylistInfoFragment : Fragment() {
 
     val viewModel by activityViewModel<PlaylistInfoViewModel>()
     private lateinit var binding: FragmentPlaylistInfoBinding
+
     private val tracks = mutableListOf<Track>()
     private val tracksAdapter = TracksAdapter(tracks)
 
     private var isClickAllowed = true
     private var clickDebounceJob : Job? = null
+    private lateinit var playlist: Playlist
+    private var playlistId: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +67,7 @@ class PlaylistInfoFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         isClickAllowed = true
+        viewModel.loadPlaylistInfo(playlistId)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,7 +84,11 @@ class PlaylistInfoFragment : Fragment() {
         val playlistShare               = binding.playlistShare
         val playlistMenu                = binding.playlistMenu
 
-        val playlistId = requireArguments().getLong(PLAYLIST_ID) ?: 0
+        val playerBottomBtnShare            = binding.playerBottomBtnShare
+        val playerBottomBtnDeletePlaylist   = binding.playerBottomBtnDeletePlaylist
+        val playerBottomBtnEdit             = binding.playerBottomBtnEdit
+
+        playlistId = requireArguments().getLong(PLAYLIST_ID) ?: 0
 
         playlistInfoTracksRecView.adapter = tracksAdapter
 
@@ -84,53 +96,65 @@ class PlaylistInfoFragment : Fragment() {
             findNavController().navigateUp() }
 
         playlistShare.setOnClickListener {
-            if (tracks.isEmpty()) {
-                Toast.makeText(requireActivity(), R.string.not_tracks_to_share, Toast.LENGTH_LONG).show()
-            } else {
-
-            }
+            showShareDialog()
         }
 
-        viewModel.observePlaylistInfoState().observe(viewLifecycleOwner){
-            if (it.action == ACTION_INFO_LOADED) {
-                playlistInfoName.setText(it.playlist?.name)
-                playlistInfoDescription.setText(it.playlist?.description)
-                playlistInfoMinutes.setText(trackCountsToString(it.playlist?.trackCounts!!))
-                playlistInfoTracks.setText(durationToString(it.playlist?.totalDuration!!))
+        playlistMenu.setOnClickListener {
+            showBottomMenu()
+        }
 
-                Glide.with(view)
-                    .load(it.playlist?.filePath)
-                    .transform(CenterCrop())
-                    .placeholder(R.drawable.album_cover_empty)
-                    .into(playlistInfoImage)
-                tracks.clear()
-                tracks.addAll(it.tracks)
-                tracksAdapter.notifyDataSetChanged()
-                playlistInfoTracksRecView.isVisible = tracks.isNotEmpty()
-                playlistInfoEmptyFrame.isVisible = tracks.isEmpty()
+        playerBottomBtnShare.setOnClickListener {
+            showShareDialog()
+        }
+
+        playerBottomBtnDeletePlaylist.setOnClickListener {
+            showDeletePlaylistDialog()
+        }
+
+        playerBottomBtnEdit.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_playlistInfoFragment_to_editPlaylistFragment,
+                EditPlaylistFragment.createArgs(playlistId)
+            )
+        }
+
+        viewModel.observePlaylistInfoState().observe(viewLifecycleOwner) {
+            when (it.action) {
+                ACTION_INFO_LOADED -> {
+                    playlist = it.playlist!!
+                    playlistInfoName.setText(playlist.name)
+                    playlistInfoDescription.setText(playlist.description)
+                    playlistInfoMinutes.setText(trackCountsToString(playlist.trackCounts))
+                    playlistInfoTracks.setText(durationToString(playlist.totalDuration))
+
+                    Glide.with(view)
+                        .load(playlist.filePath)
+                        .transform(CenterCrop())
+                        .placeholder(R.drawable.album_cover_empty)
+                        .into(playlistInfoImage)
+                    tracks.clear()
+                    tracks.addAll(it.tracks)
+                    tracksAdapter.notifyDataSetChanged()
+                    playlistInfoTracksRecView.isVisible = tracks.isNotEmpty()
+                    playlistInfoEmptyFrame.isVisible = tracks.isEmpty()
+                }
+
+                ACTION_SHARE -> {
+
+                    val shareIntent = Intent(Intent.ACTION_SEND)
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, it.message)
+                    shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    shareIntent.type = "text/plain"
+                    try {
+                        requireActivity().startActivity(shareIntent, null)
+                    } catch (e: Exception) {
+                        Toast.makeText(requireActivity(), "Ошибка отправки плейлиста: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
 
         viewModel.loadPlaylistInfo(playlistId)
-    }
-
-    private fun trackCountsToString(trackCounts: Int): String {
-        when {
-            trackCounts in 11..20 -> return "$trackCounts треков"
-            trackCounts % 10 == 1 -> return "$trackCounts трек"
-            trackCounts % 10 in 2..4 -> return "$trackCounts трека"
-            else -> return "$trackCounts треков"
-        }
-    }
-
-    private fun durationToString(millis: Long): String {
-        val minutes = millis/60000
-        when {
-            minutes in 11..20 -> return "$minutes минут"
-            minutes % 10 == 1L -> return "$minutes минута"
-            minutes % 10 in 2..4 -> return "$minutes минуты"
-            else -> return "$minutes минут"
-        }
     }
 
     inner class TracksAdapter(private val items: List<Track>): RecyclerView.Adapter<TracksViewHolder> () {
@@ -191,11 +215,79 @@ class PlaylistInfoFragment : Fragment() {
             return true
     }
 
+    private fun showDeletePlaylistDialog() {
+        val message = getString(R.string.want_to_delete_playlist) + " '${playlist.name}' ?"
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.btn_delete_playlist)
+            .setMessage(message) // Описание диалога
+            .setNegativeButton("Нет") { dialog, which -> showBottomSheet()
+            }
+            .setPositiveButton("Да") { dialog, which ->
+                viewModel.deletePlaylist()
+                findNavController().navigateUp()
+            }
+            .show()
+    }
+
+    private fun showShareDialog() {
+        if (tracks.isEmpty()) {
+            Toast.makeText(requireActivity(), R.string.not_tracks_to_share, Toast.LENGTH_LONG).show()
+        } else {
+            viewModel.sharePlaylist()
+        }
+    }
+
+    private fun showBottomMenu(){
+        val playlist_item_name = requireActivity().findViewById<TextView>(R.id.playlist_item_name)
+        val playlist_item_tracks = requireActivity().findViewById<TextView>(R.id.playlist_item_tracks)
+        val playlist_item_img = requireActivity().findViewById<ImageView>(R.id.playlist_item_img)
+
+        playlist_item_name.setText(playlist.name)
+        playlist_item_tracks.setText(trackCountsToString(playlist.trackCounts))
+        Glide.with(requireView())
+            .load(playlist.filePath)
+            .transform(CenterCrop(), RoundedCorners(2))
+            .placeholder(R.drawable.album_cover_empty)
+            .into(playlist_item_img)
+
+        binding.playerBottomSheet.isVisible = false
+        binding.playerBottomSheetMenu.isVisible = true
+        binding.overlay.isVisible = true
+    }
+
+    private fun showBottomSheet(){
+        binding.playerBottomSheet.isVisible = true
+        binding.playerBottomSheetMenu.isVisible = false
+        binding.overlay.isVisible = false
+    }
+
+    private fun trackCountsToString(trackCounts: Int): String {
+        when {
+            trackCounts in 11..20 -> return "$trackCounts треков"
+            trackCounts % 10 == 1 -> return "$trackCounts трек"
+            trackCounts % 10 in 2..4 -> return "$trackCounts трека"
+            else -> return "$trackCounts треков"
+        }
+    }
+
+    private fun durationToString(millis: Long): String {
+        val minutes = millis/60000
+        when {
+            minutes in 11..20 -> return "$minutes минут"
+            minutes % 10 == 1L -> return "$minutes минута"
+            minutes % 10 in 2..4 -> return "$minutes минуты"
+            else -> return "$minutes минут"
+        }
+    }
+
     companion object {
         private const val PLAYLIST_ID = "plailist_id"
         fun newInstance() = PlaylistInfoFragment()
         fun createArgs(plailistid: Long) : Bundle = bundleOf(PLAYLIST_ID to plailistid)
+
         private const val ACTION_INFO_LOADED = 1
+        private const val ACTION_SHARE = 2
+
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

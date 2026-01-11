@@ -20,6 +20,10 @@ class TracksInteractorImpl(private val repository: TracksRepository): TracksInte
         withContext(Dispatchers.IO) { repository.deleteTrack(track) }
     }
 
+    override suspend fun deleteTrack(idTrack: Long) {
+        withContext(Dispatchers.IO) { repository.deleteTrack(idTrack) }
+    }
+
     override suspend fun deleteFavoriteTrack(track: Track) {
         withContext(Dispatchers.IO) { repository.deleteFavoriteTrack(track) }
     }
