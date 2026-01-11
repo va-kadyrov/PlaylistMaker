@@ -19,6 +19,10 @@ import androidx.core.graphics.toColor
 import androidx.core.net.toUri
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -42,10 +46,6 @@ open class NewPlaylistFragment : Fragment() {
 
     lateinit var binding: FragmentNewPlaylistBinding
     open val viewModel: NewPlaylistViewModel by inject()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -126,7 +126,13 @@ open class NewPlaylistFragment : Fragment() {
         val inputStream = requireActivity().contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(newFile)
         outputStream.write(inputStream?.readBytes())
-        binding.newPlaylistImageview.setImageURI(newFile.toUri())
+        Glide.with(requireView())
+            .load(newFile)
+            .transform(CenterCrop(), RoundedCorners(8))
+            .placeholder(R.drawable.new_playlist_img)
+            .into(binding.newPlaylistImageview)
+            binding.newPlaylistImageview.setBackgroundResource(0)
+
         viewModel.playlistFilepath(newFile.toUri().toString())
     }
 

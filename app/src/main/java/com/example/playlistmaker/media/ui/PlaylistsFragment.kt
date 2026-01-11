@@ -101,7 +101,7 @@ class PlaylistsFragment : Fragment() {
             tracksView.text = trackCountsToString(playlist.trackCounts)
             Glide.with(itemView)
                 .load(playlist.filePath)
-                .transform(CenterCrop(), RoundedCorners(8))
+                .transform(CenterCrop(), RoundedCorners(32))
                 .placeholder(R.drawable.album_cover_empty)
                 .into(imageView)
         }

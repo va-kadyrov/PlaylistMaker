@@ -1,6 +1,7 @@
 package com.example.playlistmaker.media.ui
 
 import android.content.Intent
+import android.icu.text.SimpleDateFormat
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
@@ -27,6 +28,7 @@ import com.example.playlistmaker.media.data.Playlist
 import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.ui.SearchFragment.TracksViewHolder
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
@@ -34,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import java.util.Locale
 import kotlin.getValue
 import kotlin.math.round
 
@@ -49,12 +52,6 @@ class PlaylistInfoFragment : Fragment() {
     private var clickDebounceJob : Job? = null
     private lateinit var playlist: Playlist
     private var playlistId: Long = 0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,6 +85,9 @@ class PlaylistInfoFragment : Fragment() {
         val playerBottomBtnDeletePlaylist   = binding.playerBottomBtnDeletePlaylist
         val playerBottomBtnEdit             = binding.playerBottomBtnEdit
 
+        val playerBottomSheetMenu           = binding.playerBottomSheetMenu
+        val bottomSheetBehavior             = BottomSheetBehavior.from(playerBottomSheetMenu)
+
         playlistId = requireArguments().getLong(PLAYLIST_ID) ?: 0
 
         playlistInfoTracksRecView.adapter = tracksAdapter
@@ -117,6 +117,20 @@ class PlaylistInfoFragment : Fragment() {
                 EditPlaylistFragment.createArgs(playlistId)
             )
         }
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = GONE
+                        binding.playerBottomSheet.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
 
         viewModel.observePlaylistInfoState().observe(viewLifecycleOwner) {
             when (it.action) {
@@ -253,6 +267,9 @@ class PlaylistInfoFragment : Fragment() {
         binding.playerBottomSheet.isVisible = false
         binding.playerBottomSheetMenu.isVisible = true
         binding.overlay.isVisible = true
+
+        BottomSheetBehavior.from(binding.playerBottomSheetMenu).state=BottomSheetBehavior.STATE_COLLAPSED
+
     }
 
     private fun showBottomSheet(){

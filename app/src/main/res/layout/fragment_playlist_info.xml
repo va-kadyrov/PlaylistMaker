@@ -93,9 +93,16 @@
                 android:singleLine="true"
                 android:fontFamily="@font/ys_display_medium"
                 android:textSize="18sp"
-                android:drawableEnd="@drawable/small_ellipse_almost_black"
                 android:textColor="@color/almost_black"
                 android:text="999 минут"/>
+
+            <ImageView
+                android:id="@+id/playlist_info_minutesTracksDev"
+                android:layout_width="3dp"
+                android:layout_height="3dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_gravity="center"
+                android:src="@drawable/small_ellipse_almost_black"/>
 
             <TextView
                 android:id="@+id/playlist_info_tracks"
@@ -199,7 +206,7 @@
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
         android:visibility="gone"
-        app:behavior_hideable="false"
+        app:behavior_hideable="true"
         app:behavior_peekHeight="260dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 

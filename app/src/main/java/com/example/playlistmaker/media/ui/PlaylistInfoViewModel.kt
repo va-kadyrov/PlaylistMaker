@@ -28,11 +28,10 @@ class PlaylistInfoViewModel(val playlistInteractor: PlaylistInteractor, val trac
         viewModelScope.launch {
             playlist = playlistInteractor.loadInfo(id).single()
             val tracks = mutableListOf<Track>()
-            playlist?.totalDuration = 0
+            playlist?.totalDuration = trackInreractor.totalDuration(playlist?.tracks!!.toList())
             playlist?.tracks?.forEach {
                 val track = trackInreractor.getTrackInfo(it).single()
                 tracks.add(track)
-                playlist?.totalDuration += track.trackTimeMillis
             }
             playlistInfoState.postValue(PlaylistInfoState(ACTION_INFO_LOADED, playlist, tracks, ""))
         }
