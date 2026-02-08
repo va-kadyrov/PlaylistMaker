@@ -23,6 +23,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentFavoriteTracksBinding
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.media.data.Playlist
+import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.ui.SearchFragment.TracksViewHolder
 import com.example.playlistmaker.search.ui.TracksState
@@ -100,7 +101,7 @@ class PlaylistsFragment : Fragment() {
             tracksView.text = trackCountsToString(playlist.trackCounts)
             Glide.with(itemView)
                 .load(playlist.filePath)
-                .transform(CenterCrop(), RoundedCorners(8))
+                .transform(CenterCrop(), RoundedCorners(32))
                 .placeholder(R.drawable.album_cover_empty)
                 .into(imageView)
         }
@@ -124,6 +125,11 @@ class PlaylistsFragment : Fragment() {
 
         override fun onBindViewHolder(holder: PlaylistsViewHolder, position: Int) {
             holder.bind(items[position])
+            holder.itemView.setOnClickListener {
+                findNavController().navigate(
+                    R.id.action_mediaFragment_to_playlistInfoFragment,
+                    PlaylistInfoFragment.createArgs(items[position].id))
+            }
         }
 
         override fun getItemCount(): Int {

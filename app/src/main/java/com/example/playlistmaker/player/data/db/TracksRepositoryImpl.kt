@@ -30,6 +30,10 @@ class TracksRepositoryImpl(
         appDatabase.trackDao().delete(trackDbConverter.map(track))
     }
 
+    override suspend fun deleteTrack(id: Long) {
+        appDatabase.trackDao().delete(id)
+    }
+
     override suspend fun deleteFavoriteTrack(track: Track) {
         appDatabase.favoriteTrackDao().delete(favoriteTrackDbConverter.map(track))
     }
@@ -40,7 +44,12 @@ class TracksRepositoryImpl(
         emit(tracks)
     }
 
+    override suspend fun getTrackInfo(id: Long): Flow<Track> = flow {
+        emit(trackDbConverter.map(appDatabase.trackDao().getInfo(id)))
+    }
+
     private fun convert(tracks: List<FavoriteTrackEntity>): List<Track> {
         return tracks.map {track -> favoriteTrackDbConverter.map(track)}
     }
+
 }
