@@ -32,7 +32,7 @@ class PlayerFragment : Fragment() {
 
     private val viewModel: PlayerViewModel by inject()
     private lateinit var binding: FragmentPlayerBinding
-    private lateinit var btnPlay : Button
+    private lateinit var btnPlay : PlaybackButtonView
     private lateinit var plaingProgress: TextView
 
     override fun onCreateView(
@@ -106,15 +106,16 @@ class PlayerFragment : Fragment() {
                 ACTION_PLAYER_STATUS -> {
                     when(it.playerStatus) {
                         STATE_DEFAULT -> {
-                            btnPlay.setBackgroundResource(R.drawable.btn_play_track)
                             btnPlay.isEnabled = false
                         }
                         STATE_PLAYING -> {
-                            btnPlay.setBackgroundResource(R.drawable.btn_pause)
                         }
-                        STATE_PREPARED, STATE_PAUSED -> {
-                            btnPlay.setBackgroundResource(R.drawable.btn_play_track)
+                        STATE_PAUSED -> {
                             btnPlay.isEnabled = true
+                        }
+                        STATE_PREPARED -> {
+                            btnPlay.isEnabled = true
+                            btnPlay.switchState(false)
                 }}}
 
                 ACTION_TIMER_UPDATE -> {
