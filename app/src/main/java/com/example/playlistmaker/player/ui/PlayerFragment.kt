@@ -1,19 +1,25 @@
 package com.example.playlistmaker.player.ui
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context.BIND_AUTO_CREATE
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import android.icu.text.SimpleDateFormat
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.net.toUri
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -25,8 +31,10 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.media.data.Playlist
 import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.services.PlayerService
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.android.ext.android.inject
+import kotlin.getValue
 
 class PlayerFragment : Fragment() {
 
@@ -34,6 +42,16 @@ class PlayerFragment : Fragment() {
     private lateinit var binding: FragmentPlayerBinding
     private lateinit var btnPlay : PlaybackButtonView
     private lateinit var plaingProgress: TextView
+
+    private val playerServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as PlayerService.PlayerServiceBinder
+            viewModel.setPlayerInteractor(binder.getService())
+        }
+        override fun onServiceDisconnected(name: ComponentName?) {
+            viewModel.removePlayerInteractor()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -71,6 +89,8 @@ class PlayerFragment : Fragment() {
         val playlists = mutableListOf<Playlist>()
         val playerPlaylistsAdapter = PlaylistsAdapter(playlists)
 
+        bindPlayerService(track)
+
         btnPlay = binding.playerBtnPlay
         plaingProgress = binding.playerPlayingProgress
         btnPlay.isEnabled = false
@@ -102,47 +122,36 @@ class PlayerFragment : Fragment() {
                 .placeholder(R.drawable.album_cover_empty).into(player_albumCover)
 
         viewModel.observePlayerFragmentState().observe(viewLifecycleOwner){
-            when(it.action) {
-                ACTION_PLAYER_STATUS -> {
-                    when(it.playerStatus) {
-                        STATE_DEFAULT -> {
-                            btnPlay.isEnabled = false
-                        }
-                        STATE_PLAYING -> {
-                        }
-                        STATE_PAUSED -> {
-                            btnPlay.isEnabled = true
-                        }
-                        STATE_PREPARED -> {
-                            btnPlay.isEnabled = true
-                            btnPlay.switchState(false)
-                }}}
-
-                ACTION_TIMER_UPDATE -> {
+            when(it) {
+                is PlayerFragmentState.PlayerStatusDefault -> {
+                    btnPlay.isEnabled = false
+                    plaingProgress.text = it.trackTimeProgress }
+                is PlayerFragmentState.PlayerStatusPlaying -> {
+                    btnPlay.isEnabled = true
+                    plaingProgress.text = it.trackTimeProgress}
+                is PlayerFragmentState.PlayerStatusPaused -> {
+                    btnPlay.isEnabled = true
+                    plaingProgress.text = it.trackTimeProgress}
+                is PlayerFragmentState.PlayerStatusPrepared -> {
+                    btnPlay.isEnabled = true
                     plaingProgress.text = it.trackTimeProgress
-                }
-
-                ACTION_PLAYLISTS_UPDATE -> {
+                    btnPlay.switchState(false)}
+                is PlayerFragmentState.PlaylistsUpdate -> {
                     playlists.clear()
                     playlists.addAll(it.playlists)
                     playerPlaylistsAdapter.notifyDataSetChanged()
                 }
-
-                ACTION_IS_FAVORITE -> {
+                is PlayerFragmentState.IsFavoriteUpdate -> {
                     if (it.isFavorite) {
                         btnLike.setBackgroundResource(R.drawable.btn_like_track1)
                     } else btnLike.setBackgroundResource(R.drawable.btn_like_track)
                 }
-
-                ACTION_TRACK_IN_PLAYLIST -> {
-                    when(it.trackInPlaylist) {
-                        TRACK_ADDED_IN_PL_SUCCESSFULLY -> {
-                            Toast.makeText(requireActivity(), "Добавлено в плейлист ${it.playlistName}", Toast.LENGTH_SHORT).show()
-                            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                        }
-                        TRACK_ALREADY_IN_PLAYLIST -> {
-                            Toast.makeText(requireActivity(), "Трек уже добавлен в плейлист ${it.playlistName}", Toast.LENGTH_SHORT).show() }
-                    }
+                is PlayerFragmentState.TrackAddedInPlaylist -> {
+                    Toast.makeText(requireActivity(), "Добавлено в плейлист ${it.playlistName}", Toast.LENGTH_SHORT).show()
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+                is PlayerFragmentState.TrackAlreadyInPlaylist -> {
+                    Toast.makeText(requireActivity(), "Трек уже добавлен в плейлист ${it.playlistName}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -179,14 +188,38 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.onPause()
+    private fun bindPlayerService(track: Track) {
+        val intent = Intent(requireContext(), PlayerService::class.java).apply {
+            putExtra("previewUrl", track.previewUrl)
+            putExtra("artistName", track.artistName)
+            putExtra("trackName", track.trackName)
+        }
+        requireActivity().bindService(intent, playerServiceConnection, BIND_AUTO_CREATE)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.playerDestroy()
+    private fun unbindPlayerService() {
+        requireActivity().unbindService(playerServiceConnection)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+            viewModel.showNotification()
+        } else {
+            Toast.makeText(requireContext(), "Для показа уведомления необходимо разрешение.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+            viewModel.hideNotification()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        unbindPlayerService()
     }
 
     fun getCoverArtwork(artworkUrl100: String) = artworkUrl100.replaceAfterLast('/',"512x512bb.jpg")
@@ -235,23 +268,8 @@ class PlayerFragment : Fragment() {
     }
 
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-
-        private const val TRACK_ADDED_IN_PL_SUCCESSFULLY = 1
-        private const val TRACK_ALREADY_IN_PLAYLIST = 2
-
-        private const val ACTION_PLAYER_STATUS      = 1
-        private const val ACTION_TIMER_UPDATE       = 2
-        private const val ACTION_PLAYLISTS_UPDATE   = 3
-        private const val ACTION_IS_FAVORITE        = 4
-        private const val ACTION_TRACK_IN_PLAYLIST  = 5
-
         private const val TRACK_JSON = "track_json"
-
         fun createArgs(trackJson: String) : Bundle = bundleOf(TRACK_JSON to trackJson)
-
     }
 }
+
