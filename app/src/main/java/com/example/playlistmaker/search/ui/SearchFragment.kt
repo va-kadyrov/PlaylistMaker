@@ -209,6 +209,8 @@ class SearchFragment : Fragment() {
             val gson: Gson by inject()
             val trackJson: String = gson.toJson(track)
             Log.i(TAG, "Player are opening")
+            val inputMethodManager = getSystemService(requireContext(), InputMethodManager::class.java) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
             findNavController().navigate(
                 R.id.action_searchFragment_to_playerFragment,
                 PlayerFragment.createArgs(trackJson)
