@@ -46,11 +46,9 @@ class PlayerService(): Service(), PlayerInteractor {
     override fun onCreate(){
         super.onCreate()
         createNotificationChannel()
-        Log.d("playerService", "onCreate")
     }
 
     override fun onDestroy() {
-        Log.d("playerService", "onDestroy")
         super.onDestroy()
         releasePlayer()
     }
@@ -61,12 +59,10 @@ class PlayerService(): Service(), PlayerInteractor {
         artistName = intent?.getStringExtra("artistName") ?: ""
         trackName = intent?.getStringExtra("trackName") ?: ""
         preparePlayer(previewUrl)
-        Log.d("playerService", "onBind")
         return binder
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.d("playerService", "onUnbind")
         releasePlayer()
         return super.onUnbind(intent)
     }
@@ -114,13 +110,10 @@ class PlayerService(): Service(), PlayerInteractor {
         mediaPlayer?.prepareAsync()
         mediaPlayer?.setOnPreparedListener {
             _playerState.value = PlayerFragmentState.PlayerStatusPrepared("00:00")
-//            playerFragmentStateLD.postValue(playerStatus)
-            Log.d("playerService", "preparePlayer")
         }
         mediaPlayer?.setOnCompletionListener {
             _playerState.value = PlayerFragmentState.PlayerStatusPrepared("00:00")
             hideNotification()
-            Log.d("playerService", "playerComplete")
         }
     }
 
@@ -155,7 +148,6 @@ class PlayerService(): Service(), PlayerInteractor {
         if (mediaPlayer == null) return
         mediaPlayer?.pause()
         _playerState.value = PlayerFragmentState.PlayerStatusPaused(timeFormat.format(mediaPlayer?.currentPosition))
-        Log.d("playerService", "pausePlayer")
     }
 
     private fun releasePlayer() {
@@ -181,7 +173,6 @@ class PlayerService(): Service(), PlayerInteractor {
 
     override fun showNotification() {
         if(_playerState.value is PlayerFragmentState.PlayerStatusPlaying){
-            Log.d("playerService", "showNotification")
             ServiceCompat.startForeground(
                 this,
                 SERVICE_NOTIFICATION_ID,
@@ -192,7 +183,6 @@ class PlayerService(): Service(), PlayerInteractor {
     }
 
     override fun hideNotification() {
-        Log.d("playerService", "hideNotification")
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
     }
 
