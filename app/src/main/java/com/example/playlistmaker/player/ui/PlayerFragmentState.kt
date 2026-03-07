@@ -2,12 +2,13 @@ package com.example.playlistmaker.player.ui
 
 import com.example.playlistmaker.media.data.Playlist
 
-data class PlayerFragmentState(
-    var action: Int,
-    var playerStatus: Int,
-    var trackTimeProgress: String,
-    var isFavorite: Boolean,
-    val playlists: MutableList<Playlist>,
-    var trackInPlaylist: Int = 0,
-    var playlistName: String = ""
-)
+sealed interface PlayerFragmentState {
+    data class PlaylistsUpdate(val playlists: List<Playlist>): PlayerFragmentState
+    data class IsFavoriteUpdate(val isFavorite: Boolean): PlayerFragmentState
+    data class TrackAlreadyInPlaylist(val playlistName: String): PlayerFragmentState
+    data class TrackAddedInPlaylist(val playlistName: String): PlayerFragmentState
+    data class PlayerStatusDefault(val trackTimeProgress: String): PlayerFragmentState
+    data class PlayerStatusPrepared(val trackTimeProgress: String): PlayerFragmentState
+    data class PlayerStatusPlaying(val trackTimeProgress: String): PlayerFragmentState
+    data class PlayerStatusPaused(val trackTimeProgress: String): PlayerFragmentState
+}
