@@ -25,7 +25,7 @@ import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.media.data.Playlist
 import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.Track
-import com.example.playlistmaker.search.ui.SearchFragment.TracksViewHolder
+//import com.example.playlistmaker.search.ui.SearchFragment.TracksViewHolder
 import com.example.playlistmaker.search.ui.TracksState
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import java.util.Date
