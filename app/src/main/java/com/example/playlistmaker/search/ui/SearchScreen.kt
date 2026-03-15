@@ -25,8 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
@@ -34,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,6 +61,7 @@ import com.example.playlistmaker.search.domain.Track
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.Placeholder
 import com.bumptech.glide.integration.compose.placeholder
+import com.example.playlistmaker.main.ui.TrackRow
 import com.example.playlistmaker.settings.ui.ContentButton
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -87,7 +91,7 @@ fun SearchScreen(
 {
     val trackState by observeTrackState.observeAsState()
     val trackHistoryState by observeTrackHistoryState.observeAsState()
-//    val inputText by observeInputTextState.observeAsState()
+//    val restoredInputText by observeInputTextState.observeAsState()
 
 //    val focusManager = LocalFocusManager.current
 //    val keyboardController = LocalSoftwareKeyboardController.current
@@ -194,10 +198,11 @@ private fun TopBar(){
 
 @Composable
 private fun SearchTextField(
+//    restoredInputText: String,
     searchTextEntered: () -> Unit,
     searchTextChanged: (String) -> Unit,
 ) {
-    var inputText = remember { mutableStateOf("") }
+    var inputText = rememberSaveable{ mutableStateOf("") }
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -206,6 +211,10 @@ private fun SearchTextField(
         ) {
         OutlinedTextField(
             shape = RoundedCornerShape(8.dp),
+//            colors = OutlinedTextFieldDefaults.colors(
+//                focusedBorderColor = Color.Transparent,
+//                unfocusedBorderColor = Color.Transparent
+//            ),
             modifier = Modifier
                 .background(color = colorResource(R.color.search_ev_back))
                 .fillMaxWidth(),
@@ -227,7 +236,7 @@ private fun SearchTextField(
             singleLine = true,
         )
 
-        IconButton(onClick = { searchTextChanged(""); searchTextEntered() },
+        IconButton(onClick = { inputText.value = ""; searchTextChanged(""); searchTextEntered(); },
             modifier = Modifier.align(alignment = Alignment.CenterEnd)
         )  {
             Icon(
@@ -267,66 +276,6 @@ fun HistoryTracksList(tracks: List<Track>, onItemClick: (Track) -> Unit, clearTr
         )
     }}
 }
-
-@Composable
-@OptIn(ExperimentalGlideComposeApi::class)
-private fun TrackRow(track: Track, onItemClick: (Track) -> Unit) {
-    val timeFormat = remember { SimpleDateFormat("mm:ss") }
-    Row(modifier = Modifier.clickable(onClick = {onItemClick(track)})) {
-
-        GlideImage(
-            model = track.artworkUrl100,
-            contentDescription = "image",
-            modifier = Modifier.size(46.dp),
-            contentScale = ContentScale.Fit,
-            loading = placeholder(painterResource(R.drawable.track_empty_img)),
-            failure = placeholder(painterResource(R.drawable.track_empty_img)),
-        )
-
-        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-            Text(
-                text = track.trackName,
-                fontSize = dimensionResource(R.dimen.middle_text).value.sp,
-                fontFamily = FontFamily(Font(R.font.ys_display_regular)),
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
-            Row() {
-                Text(
-                    text = track.artistName,
-                    fontSize = dimensionResource(R.dimen.small_text).value.sp,
-                    fontFamily = FontFamily(Font(R.font.ys_display_regular)),
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-                Icon(
-                    painter = painterResource(R.drawable.btn_agreement),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(4.dp)
-                        .align(Alignment.CenterVertically)
-                )
-                Text(
-                    text = timeFormat.format(Date(track.trackTimeMillis)),
-                    fontSize = dimensionResource(R.dimen.small_text).value.sp,
-                    fontFamily = FontFamily(Font(R.font.ys_display_regular)),
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-            }
-        }
-
-        Spacer(Modifier.weight(1F))
-
-        Icon(
-            painter = painterResource(R.drawable.btn_agreement),
-            contentDescription = "АВ",
-            tint = Color(0xCC, 0xCC, 0xCC),
-            modifier = Modifier
-                .size(24.dp)
-                .align(Alignment.CenterVertically)
-        )
-    }
-
-}
-
 
 
 @Composable

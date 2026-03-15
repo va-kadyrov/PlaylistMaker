@@ -10,6 +10,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import androidx.navigation.fragment.findNavController
@@ -47,10 +48,10 @@ class PlaylistsFragment : Fragment() {
 //    private var param2: String? = null
 
     val viewModel by activityViewModel<PlaylistsViewModel>()
-    private lateinit var binding: FragmentPlaylistsBinding
+//    private lateinit var binding: FragmentPlaylistsBinding
 
-    val playlists = mutableListOf<Playlist>()
-    val playlistsAdapter = PlaylistsAdapter(playlists)
+//    val playlists = mutableListOf<Playlist>()
+//    val playlistsAdapter = PlaylistsAdapter(playlists)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,95 +71,113 @@ class PlaylistsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
-        return binding.root
+//        binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
+//        return binding.root
+        return ComposeView(requireContext()).apply{
+            setContent {
+                PlaylistsScreen(
+                    viewModel.observePlaylistsState(),
+                    {
+                        findNavController().navigate(
+                            R.id.action_mediaFragment_to_newPlaylistFragment)
+                    },
+                    { playlistId ->
+                        findNavController().navigate(
+                            R.id.action_mediaFragment_to_playlistInfoFragment,
+                            PlaylistInfoFragment.createArgs(playlistId))
+                    }
+                )
+            }
+        }
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val playlistsRecView = binding.playlistsRecView
-        val btnNewPlaylist = binding.btnNewPlaylist
-
-        playlistsRecView.layoutManager = GridLayoutManager(requireActivity(), 2)
-        playlistsRecView.adapter = playlistsAdapter
-
-        btnNewPlaylist.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaFragment_to_newPlaylistFragment)
-        }
-
-        viewModel.observePlaylistsState().observe(viewLifecycleOwner) {playlistsStateObserver(it) }
+//        val playlistsRecView = binding.playlistsRecView
+//        val btnNewPlaylist = binding.btnNewPlaylist
+//
+//        playlistsRecView.layoutManager = GridLayoutManager(requireActivity(), 2)
+//        playlistsRecView.adapter = playlistsAdapter
+//
+//        btnNewPlaylist.setOnClickListener {
+//            findNavController().navigate(R.id.action_mediaFragment_to_newPlaylistFragment)
+//        }
+//
+//        viewModel.observePlaylistsState().observe(viewLifecycleOwner) {playlistsStateObserver(it) }
 
     }
 
-    class PlaylistsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        private val imageView: ImageView = itemView.findViewById(R.id.playlist_item_img)
-        private val nameView: TextView = itemView.findViewById(R.id.playlist_item_name)
-        private val tracksView: TextView = itemView.findViewById(R.id.playlist_item_tracks)
+//    class PlaylistsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+//        private val imageView: ImageView = itemView.findViewById(R.id.playlist_item_img)
+//        private val nameView: TextView = itemView.findViewById(R.id.playlist_item_name)
+//        private val tracksView: TextView = itemView.findViewById(R.id.playlist_item_tracks)
 
-        fun bind(playlist: Playlist) {
-            nameView.text = playlist.name
-            tracksView.text = trackCountsToString(playlist.trackCounts)
-            Glide.with(itemView)
-                .load(playlist.filePath)
-                .transform(CenterCrop(), RoundedCorners(32))
-                .placeholder(R.drawable.album_cover_empty)
-                .into(imageView)
-        }
+//        fun bind(playlist: Playlist) {
+//            nameView.text = playlist.name
+//            tracksView.text = trackCountsToString(playlist.trackCounts)
+//            Glide.with(itemView)
+//                .load(playlist.filePath)
+//                .transform(CenterCrop(), RoundedCorners(32))
+//                .placeholder(R.drawable.album_cover_empty)
+//                .into(imageView)
+//        }
+//
+//        private fun trackCountsToString(trackCounts: Int): String {
+//            when {
+//                trackCounts in 11..20 -> return "$trackCounts треков"
+//                trackCounts % 10 == 1 -> return "$trackCounts трек"
+//                trackCounts % 10 in 2..4 -> return "$trackCounts трека"
+//                else -> return "$trackCounts треков"
+//            }
+//        }
+//    }
 
-        private fun trackCountsToString(trackCounts: Int): String {
-            when {
-                trackCounts in 11..20 -> return "$trackCounts треков"
-                trackCounts % 10 == 1 -> return "$trackCounts трек"
-                trackCounts % 10 in 2..4 -> return "$trackCounts трека"
-                else -> return "$trackCounts треков"
-            }
-        }
-    }
-
-    inner class PlaylistsAdapter(private val items: List<Playlist>): RecyclerView.Adapter<PlaylistsViewHolder> () {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistsViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.playlist_recycler_layout, parent, false)
-            return PlaylistsViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: PlaylistsViewHolder, position: Int) {
-            holder.bind(items[position])
-            holder.itemView.setOnClickListener {
-                findNavController().navigate(
-                    R.id.action_mediaFragment_to_playlistInfoFragment,
-                    PlaylistInfoFragment.createArgs(items[position].id))
-            }
-        }
-
-        override fun getItemCount(): Int {
-            return items.size
-        }
-    }
-
-    private fun playlistsStateObserver(it: PlaylistsState) {
-        playlists.clear()
-        when {
-            it.isEmpty -> showNothing()
-            else -> {
-                playlists.addAll(it.playlists)
-                playlistsAdapter.notifyDataSetChanged()
-                showPlaylists()
-            }
-        }
-    }
-
-    fun showPlaylists(){
-        binding.playlistsRecView.visibility = VISIBLE
-        binding.playlistsEmptyFrame.visibility = GONE
-    }
-
-    fun showNothing(){
-        binding.playlistsRecView.visibility = GONE
-        binding.playlistsEmptyFrame.visibility = VISIBLE
-    }
-
+//    inner class PlaylistsAdapter(private val items: List<Playlist>): RecyclerView.Adapter<PlaylistsViewHolder> () {
+//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistsViewHolder {
+//            val view = LayoutInflater.from(parent.context)
+//                .inflate(R.layout.playlist_recycler_layout, parent, false)
+//            return PlaylistsViewHolder(view)
+//        }
+//
+//        override fun onBindViewHolder(holder: PlaylistsViewHolder, position: Int) {
+//            holder.bind(items[position])
+//            holder.itemView.setOnClickListener {
+//                findNavController().navigate(
+//                    R.id.action_mediaFragment_to_playlistInfoFragment,
+//                    PlaylistInfoFragment.createArgs(items[position].id))
+//            }
+//        }
+//
+//        override fun getItemCount(): Int {
+//            return items.size
+//        }
+//    }
+//
+//    private fun playlistsStateObserver(it: PlaylistsState) {
+//        playlists.clear()
+//        when {
+//            it.isEmpty -> showNothing()
+//            else -> {
+//                playlists.addAll(it.playlists)
+//                playlistsAdapter.notifyDataSetChanged()
+//                showPlaylists()
+//            }
+//        }
+//    }
+//
+//    fun showPlaylists(){
+//        binding.playlistsRecView.visibility = VISIBLE
+//        binding.playlistsEmptyFrame.visibility = GONE
+//    }
+//
+//    fun showNothing(){
+//        binding.playlistsRecView.visibility = GONE
+//        binding.playlistsEmptyFrame.visibility = VISIBLE
+//    }
+//
     companion object {
         fun newInstance() = PlaylistsFragment()
     }

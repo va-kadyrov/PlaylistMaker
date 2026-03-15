@@ -88,6 +88,10 @@ class SearchViewModel(private val tracksNtInteractor: TracksNtInteractor, privat
         }
     }
 
+//    fun returnInputText(){
+//        inputTextLiveData.postValue(searchString)
+//    }
+
     private fun showHistory(){
         viewModelScope.launch {
             tracksHistoryInteractor.loadTracks(TracksHistoryConsumerImpl())}

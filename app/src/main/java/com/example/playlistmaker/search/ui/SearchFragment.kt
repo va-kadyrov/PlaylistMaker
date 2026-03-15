@@ -96,6 +96,7 @@ class SearchFragment : Fragment() {
     override fun onResume(){
         super.onResume()
         isClickAllowed = true
+//        viewModel.returnInputText()
         viewModel.repeatSearch()
         viewModel.searchFielsOnFocus()
     }
@@ -125,7 +126,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.searchTextEntered("")
+//        viewModel.searchTextEntered("")
     }
 
 //        viewModel.observeTrackState().observe(viewLifecycleOwner ) {tracksStateObserver(it)}
