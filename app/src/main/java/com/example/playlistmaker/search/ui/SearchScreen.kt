@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -105,6 +106,8 @@ fun SearchScreen(
 
             SearchTextField(searchTextEntered, searchTextChanged)
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             when {
                 trackHistoryState == null -> {}
                 trackHistoryState!!.isVisible -> HistoryTracksList(
@@ -159,8 +162,8 @@ private fun NoTracks(imageResource: Int, textResource: Int,
         .fillMaxWidth()) {
         Image(
             modifier = Modifier
-                .size(120.dp, 120.dp)
                 .padding(bottom = 16.dp)
+                .size(120.dp, 120.dp)
                 .align(Alignment.CenterHorizontally),
             painter = painterResource(imageResource),
             contentDescription = "nothing foung",
