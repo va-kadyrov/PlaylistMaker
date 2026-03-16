@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.example.playlistmaker.media.data.db.PlaylistDao
 import com.example.playlistmaker.media.data.db.PlaylistEntity
 
-@Database(version = 4, entities = [TrackEntity::class,PlaylistEntity::class,FavoriteTrackEntity::class])
+@Database(version = 4, entities = [TrackEntity::class,PlaylistEntity::class,FavoriteTrackEntity::class], exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun trackDao(): TrackDao
     abstract fun favoriteTrackDao(): FavoriteTrackDao

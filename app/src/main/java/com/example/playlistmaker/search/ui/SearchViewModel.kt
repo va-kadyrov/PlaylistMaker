@@ -1,9 +1,11 @@
 package com.example.playlistmaker.search.ui
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.main.ui.TAG
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.api.TracksConsumer
 import com.example.playlistmaker.search.domain.api.TracksHistoryInteractor
@@ -26,6 +28,9 @@ class SearchViewModel(private val tracksNtInteractor: TracksNtInteractor, privat
     private val tracksHistoryStateLiveData = MutableLiveData<TracksHistoryState>(TracksHistoryState(false, false, emptyList<Track>().toMutableList()))
     fun observeTrackHistoryState(): LiveData<TracksHistoryState> = tracksHistoryStateLiveData
 
+//    private val inputTextLiveData = MutableLiveData<String>()
+//    fun observeInputTextState(): LiveData<String> = inputTextLiveData
+
     fun searchTextEntered(inputText: String) {
         searchJob?.cancel()
         searchString = inputText
@@ -37,7 +42,14 @@ class SearchViewModel(private val tracksNtInteractor: TracksNtInteractor, privat
         }
     }
 
+    fun searchTextEntered(){
+        searchTextEntered(searchString)
+    }
+
     fun searchTextChanged(inputText: String) {
+        Log.i(TAG, "inputText = $inputText")
+
+//        inputTextLiveData.postValue(inputText)
         if (searchString == inputText) return
         searchString = inputText
         searchJob?.cancel()
@@ -75,6 +87,10 @@ class SearchViewModel(private val tracksNtInteractor: TracksNtInteractor, privat
             tracksHistoryStateLiveData.postValue(TracksHistoryState(false, false, emptyList<Track>().toMutableList()))
         }
     }
+
+//    fun returnInputText(){
+//        inputTextLiveData.postValue(searchString)
+//    }
 
     private fun showHistory(){
         viewModelScope.launch {

@@ -1,0 +1,294 @@
+package com.example.playlistmaker.search.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults.shape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import com.example.playlistmaker.R
+import com.example.playlistmaker.main.ui.TrackRow
+import com.example.playlistmaker.main.ui.dummyTracks
+import com.example.playlistmaker.search.domain.Track
+
+
+@Composable
+@Preview
+fun SettingsScreenPreview() {
+//    SearchScreen()
+}
+
+@Composable
+fun SearchScreen(
+    observeTrackState: LiveData<TracksState>,
+    observeTrackHistoryState: LiveData<TracksHistoryState>,
+    searchTextEntered: () -> Unit,
+    searchTextChanged: (String) -> Unit,
+    repeatSearch: () -> Unit,
+    addTrackToHistory: (Track) -> Unit,
+    clearTracksHistory: () -> Unit,
+    searchFielsOnFocus: () -> Unit,
+    openPlayer: (Track) -> Unit,
+) {
+    val trackState by observeTrackState.observeAsState()
+    val trackHistoryState by observeTrackHistoryState.observeAsState()
+//    val restoredInputText by observeInputTextState.observeAsState()
+
+    Surface(color = colorResource(R.color.settings_back)) {
+
+        Column {
+
+            TopBar()
+
+            SearchTextField(searchTextEntered, searchTextChanged)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            when {
+                trackHistoryState == null -> {}
+                trackHistoryState?.isVisible?:false -> HistoryTracksList(
+                    trackHistoryState!!.content, openPlayer,
+                    clearTracksHistory
+                )
+
+                trackState == null -> {}
+                trackState?.isLoading?:false -> MyProgressBar()
+                trackState?.isEmpty?:false -> NothingFound()
+                trackState?.isError?:false -> NetworkError(repeatSearch)
+                else -> TracksList(
+                    trackState?.content?:emptyList(),
+                    { track -> addTrackToHistory(track); openPlayer(track) })
+            }
+        }
+    }
+}
+
+@Composable
+private fun MyProgressBar(){
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(44.dp),
+            color = colorResource(R.color.search_progress_bar),
+            strokeWidth = 4.dp
+        )
+    }
+}
+
+
+@Composable
+private fun NothingFound(){
+    NoTracks(R.drawable.nothing_found, R.string.nothing_found)
+}
+
+
+@Composable
+private fun NetworkError(repeatSearch: () -> Unit){
+    NoTracks(R.drawable.network_error, R.string.network_error, true, repeatSearch)
+}
+
+
+@Composable
+private fun NoTracks(imageResource: Int, textResource: Int,
+                     haveButton: Boolean = false, repeatSearch: () -> Unit = {}){
+    Column(Modifier
+        .padding(vertical = 12.dp)
+        .fillMaxWidth()) {
+        Image(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .size(120.dp, 120.dp)
+                .align(Alignment.CenterHorizontally),
+            painter = painterResource(imageResource),
+            contentDescription = "nothing foung",
+            contentScale = ContentScale.FillWidth
+        )
+        Text(modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = stringResource(textResource),
+            textAlign = TextAlign.Center,
+            fontSize = dimensionResource(R.dimen.big_text).value.sp,
+            fontFamily = FontFamily(Font(R.font.ys_display_medium)),
+            color = colorResource(R.color.search_pl_text),
+
+        )
+        if (haveButton) {
+            Button(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = repeatSearch,
+                colors = ButtonDefaults.buttonColors(
+                contentColor = colorResource(R.color.settings_back),
+                containerColor = colorResource(R.color.search_pl_text)
+                ),
+            ) {
+                Text(
+                    text = stringResource(R.string.btn_reload),
+                    fontSize = dimensionResource(R.dimen.little_text).value.sp,
+                    fontFamily = FontFamily(Font(R.font.ys_display_medium)),
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TopBar(){
+    TopAppBar(
+        title = {Text (text = stringResource(R.string.search_header))},
+        modifier = Modifier.padding(bottom = 16.dp),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorResource(R.color.settings_back),
+            titleContentColor = colorResource(R.color.settings_text),
+        )
+    )
+}
+
+
+@Composable
+private fun SearchTextField(
+    searchTextEntered: () -> Unit,
+    searchTextChanged: (String) -> Unit,
+) {
+    var inputText = rememberSaveable{ mutableStateOf("") }
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = dimensionResource(R.dimen.padding_horizontal)),
+
+        ) {
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape),
+            shape = RoundedCornerShape(8.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = colorResource(R.color.search_ev_back),
+                unfocusedContainerColor = colorResource(R.color.search_ev_back),
+
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                disabledBorderColor = Color.Transparent,
+            ),
+
+            value = inputText.value,
+            onValueChange = { newText -> inputText.value = newText; searchTextChanged(newText) },
+            keyboardActions = KeyboardActions(
+                onDone = {searchTextEntered()},
+                onSearch = {searchTextEntered()},
+            ),
+            leadingIcon = {Icon(
+                painter = painterResource(R.drawable.btn_search_small),
+                contentDescription = null,
+                tint = Color(0xCC, 0xCC, 0xCC),
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .align(alignment = Alignment.CenterStart)
+            )},
+            placeholder = { Text(stringResource(R.string.search_hint)) },
+            singleLine = true,
+        )
+
+        if (inputText.value.isNotEmpty()) {
+            IconButton(
+                onClick = { inputText.value = ""; searchTextChanged(""); searchTextEntered(); },
+                modifier = Modifier.align(alignment = Alignment.CenterEnd)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.search_clear),
+                    contentDescription = null,                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TracksList(tracks: List<Track>, onItemClick: (Track) -> Unit) {
+    LazyColumn() {
+        items(tracks.size) { index -> TrackRow(tracks[index], onItemClick) }
+    }
+}
+
+@Composable
+fun HistoryTracksList(tracks: List<Track>, onItemClick: (Track) -> Unit, clearTracksHistory: () -> Unit) {
+    Column(){
+    LazyColumn() {
+        items(tracks.size) { index -> TrackRow(tracks[index], onItemClick) }
+    }
+
+    Button(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        onClick = clearTracksHistory,
+        colors = ButtonDefaults.buttonColors(
+            contentColor = colorResource(R.color.settings_back),
+            containerColor = colorResource(R.color.search_pl_text)
+        ),
+    ) {
+        Text(
+            text = stringResource(R.string.btn_clear_history),
+            fontSize = dimensionResource(R.dimen.little_text).value.sp,
+            fontFamily = FontFamily(Font(R.font.ys_display_medium)),
+        )
+    }}
+}
+
+
+@Composable
+@Preview
+fun TracksListPreview(){
+    TracksList(dummyTracks(), {})
+}
+
+@Composable
+@Preview
+fun NothingFoundPreview(){
+    NothingFound()
+}
+
+@Composable
+@Preview
+fun NetworkErrorPreview(){
+    NetworkError({})
+}

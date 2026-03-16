@@ -38,6 +38,13 @@ class SettingsViewModel (private val context: Context, private val darkThemeInte
             }
     }
 
+    //незачем хранить состояние "Темная тема"
+    fun switchDarkTheme() {
+        val newState = !darkThemeInteractor.get()
+        darkThemeInteractor.set(newState)
+        darkThemeState.postValue(newState)
+    }
+
     fun share(){
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.ref_yandex_practicum_android))

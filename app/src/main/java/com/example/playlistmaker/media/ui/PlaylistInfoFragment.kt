@@ -27,7 +27,7 @@ import com.example.playlistmaker.main.ui.TAG
 import com.example.playlistmaker.media.data.Playlist
 import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.domain.Track
-import com.example.playlistmaker.search.ui.SearchFragment.TracksViewHolder
+//import com.example.playlistmaker.search.ui.SearchFragment.TracksViewHolder
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
@@ -46,7 +46,7 @@ class PlaylistInfoFragment : Fragment() {
     private lateinit var binding: FragmentPlaylistInfoBinding
 
     private val tracks = mutableListOf<Track>()
-    private val tracksAdapter = TracksAdapter(tracks)
+//    private val tracksAdapter = TracksAdapter(tracks)
 
     private var isClickAllowed = true
     private var clickDebounceJob : Job? = null
@@ -90,7 +90,7 @@ class PlaylistInfoFragment : Fragment() {
 
         playlistId = requireArguments().getLong(PLAYLIST_ID) ?: 0
 
-        playlistInfoTracksRecView.adapter = tracksAdapter
+//        playlistInfoTracksRecView.adapter = tracksAdapter
 
         btnBack.setOnClickListener {
             findNavController().navigateUp() }
@@ -148,7 +148,7 @@ class PlaylistInfoFragment : Fragment() {
                         .into(playlistInfoImage)
                     tracks.clear()
                     tracks.addAll(it.tracks)
-                    tracksAdapter.notifyDataSetChanged()
+//                    tracksAdapter.notifyDataSetChanged()
                     playlistInfoTracksRecView.isVisible = tracks.isNotEmpty()
                     playlistInfoEmptyFrame.isVisible = tracks.isEmpty()
                 }
@@ -171,51 +171,51 @@ class PlaylistInfoFragment : Fragment() {
         viewModel.loadPlaylistInfo(playlistId)
     }
 
-    inner class TracksAdapter(private val items: List<Track>): RecyclerView.Adapter<TracksViewHolder> () {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.search_recycler_layout, parent, false)
-            return TracksViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
-            holder.bind(items[position])
-            holder.itemView.setOnClickListener {
-                if (clickDebounce()) {
-                    openPlayer(items[position])
-                }
-            }
-            holder.itemView.setOnLongClickListener {
-                showDeleteTrackDialog(items[position])
-            }
-        }
-
-        private fun clickDebounce(): Boolean {
-            val current = isClickAllowed
-            if (isClickAllowed) {
-                isClickAllowed = false
-                clickDebounceJob = viewLifecycleOwner.lifecycleScope.launch {
-                    delay(CLICK_DEBOUNCE_DELAY)
-                    isClickAllowed = true
-                }
-            }
-            return current
-        }
-
-        override fun getItemCount(): Int {
-            return items.size
-        }
-
-        fun openPlayer(track: Track) {
-            val gson: Gson by inject()
-            val trackJson: String = gson.toJson(track)
-            Log.i(TAG, "Player are opening")
-            findNavController().navigate(
-                R.id.action_playlistInfoFragment_to_playerFragment,
-                PlayerFragment.createArgs(trackJson)
-            )
-        }
-    }
+//    inner class TracksAdapter(private val items: List<Track>): RecyclerView.Adapter<TracksViewHolder> () {
+//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TracksViewHolder {
+//            val view = LayoutInflater.from(parent.context)
+//                .inflate(R.layout.search_recycler_layout, parent, false)
+//            return TracksViewHolder(view)
+//        }
+//
+//        override fun onBindViewHolder(holder: TracksViewHolder, position: Int) {
+//            holder.bind(items[position])
+//            holder.itemView.setOnClickListener {
+//                if (clickDebounce()) {
+//                    openPlayer(items[position])
+//                }
+//            }
+//            holder.itemView.setOnLongClickListener {
+//                showDeleteTrackDialog(items[position])
+//            }
+//        }
+//
+//        private fun clickDebounce(): Boolean {
+//            val current = isClickAllowed
+//            if (isClickAllowed) {
+//                isClickAllowed = false
+//                clickDebounceJob = viewLifecycleOwner.lifecycleScope.launch {
+//                    delay(CLICK_DEBOUNCE_DELAY)
+//                    isClickAllowed = true
+//                }
+//            }
+//            return current
+//        }
+//
+//        override fun getItemCount(): Int {
+//            return items.size
+//        }
+//
+//        fun openPlayer(track: Track) {
+//            val gson: Gson by inject()
+//            val trackJson: String = gson.toJson(track)
+//            Log.i(TAG, "Player are opening")
+//            findNavController().navigate(
+//                R.id.action_playlistInfoFragment_to_playerFragment,
+//                PlayerFragment.createArgs(trackJson)
+//            )
+//        }
+//    }
 
     private fun showDeleteTrackDialog(track: Track): Boolean {
         MaterialAlertDialogBuilder(requireActivity())
