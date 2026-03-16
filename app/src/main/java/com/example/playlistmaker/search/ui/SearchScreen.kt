@@ -1,21 +1,14 @@
 package com.example.playlistmaker.search.ui
 
-import android.service.autofill.OnClickAction
-import android.widget.ProgressBar
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -25,33 +18,25 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.OutlinedTextFieldDefaults.shape
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -61,18 +46,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.playlistmaker.R
-import com.example.playlistmaker.search.domain.Track
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.Placeholder
-import com.bumptech.glide.integration.compose.placeholder
 import com.example.playlistmaker.main.ui.TrackRow
 import com.example.playlistmaker.main.ui.dummyTracks
-import com.example.playlistmaker.settings.ui.ContentButton
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.util.Date
+import com.example.playlistmaker.search.domain.Track
 
 
 @Composable
@@ -85,7 +62,6 @@ fun SettingsScreenPreview() {
 fun SearchScreen(
     observeTrackState: LiveData<TracksState>,
     observeTrackHistoryState: LiveData<TracksHistoryState>,
-//    observeInputTextState: LiveData<String>,
     searchTextEntered: () -> Unit,
     searchTextChanged: (String) -> Unit,
     repeatSearch: () -> Unit,
@@ -110,17 +86,17 @@ fun SearchScreen(
 
             when {
                 trackHistoryState == null -> {}
-                trackHistoryState!!.isVisible -> HistoryTracksList(
+                trackHistoryState?.isVisible?:false -> HistoryTracksList(
                     trackHistoryState!!.content, openPlayer,
                     clearTracksHistory
                 )
 
                 trackState == null -> {}
-                trackState!!.isLoading -> MyProgressBar()
-                trackState!!.isEmpty -> NothingFound()
-                trackState!!.isError -> NetworkError(repeatSearch)
+                trackState?.isLoading?:false -> MyProgressBar()
+                trackState?.isEmpty?:false -> NothingFound()
+                trackState?.isError?:false -> NetworkError(repeatSearch)
                 else -> TracksList(
-                    trackState!!.content,
+                    trackState?.content?:emptyList(),
                     { track -> addTrackToHistory(track); openPlayer(track) })
             }
         }
@@ -262,8 +238,7 @@ private fun SearchTextField(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.search_clear),
-                    contentDescription = "Очистить"
-                )
+                    contentDescription = null,                )
             }
         }
     }
