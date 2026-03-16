@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import com.example.playlistmaker.R
 import com.example.playlistmaker.main.ui.TrackRow
+import com.example.playlistmaker.main.ui.dummyTracks
 import com.example.playlistmaker.search.domain.Track
 
 @Composable
@@ -43,18 +44,18 @@ fun FavoriteTracksScreen(
 @Composable
 private fun NoTracks(){
     Column(Modifier
-        .padding(vertical = 12.dp)
+        .padding(top = 106.dp)
         .fillMaxWidth()) {
         Image(
             modifier = Modifier
                 .size(120.dp, 120.dp)
-                .padding(bottom = 16.dp)
                 .align(Alignment.CenterHorizontally),
             painter = painterResource(R.drawable.nothing_found),
             contentDescription = "nothing foung",
             contentScale = ContentScale.FillWidth
         )
-        Text(modifier = Modifier.align(Alignment.CenterHorizontally),
+        Text(modifier = Modifier.align(Alignment.CenterHorizontally)
+            .padding(top = 16.dp),
             text = stringResource(R.string.no_favorite_tracks),
             textAlign = TextAlign.Center,
             fontSize = dimensionResource(R.dimen.big_text).value.sp,
@@ -66,7 +67,7 @@ private fun NoTracks(){
 
 @Composable
 private fun TrackList(tracks: List<Track>, openPlayer: (Track) -> Unit ) {
-    LazyColumn() {
+    LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
         items(tracks.size) { index -> TrackRow(tracks[index], openPlayer) }
     }
 }
@@ -76,3 +77,10 @@ private fun TrackList(tracks: List<Track>, openPlayer: (Track) -> Unit ) {
 private fun NoTracksPreview(){
     NoTracks()
 }
+
+@Composable
+@Preview
+private fun TracksPreview(){
+    TrackList(dummyTracks(), {})
+}
+

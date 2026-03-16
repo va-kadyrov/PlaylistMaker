@@ -22,4 +22,5 @@
     <color name="white_almostblack">#1A1B22</color>
     <color name="gray_white_text">#FFFFFF</color>
     <color name="btn_agreement">#FFFFFF</color>
+    <color name="settings_btns">#FFFFFF</color>
 </resources>

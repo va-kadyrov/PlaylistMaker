@@ -62,6 +62,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.Placeholder
 import com.bumptech.glide.integration.compose.placeholder
 import com.example.playlistmaker.main.ui.TrackRow
+import com.example.playlistmaker.main.ui.dummyTracks
 import com.example.playlistmaker.settings.ui.ContentButton
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -294,22 +295,4 @@ fun NothingFoundPreview(){
 @Preview
 fun NetworkErrorPreview(){
     NetworkError({})
-}
-
-@Composable
-private fun dummyTracks():List<Track>{
-    return listOf<Track>(
-        Track("Выборы", "День выборов",
-            "Шнур", 100000L, Date(), "",
-            "Россия", "", 10200L, ""),
-        Track("Цезарь", "Империя",
-            "Черный обелиск", 200000L, Date(), "",
-            "Россия", "", 10201L, ""),
-        Track("Бухгалтер", "Сказки",
-            "Алена Апина", 150000L, Date(), "",
-            "Россия", "", 10202L, ""),
-        Track("Муттер", "Муттер",
-            "Рамштайн", 170000L, Date(), "",
-            "Германия", "", 10203L, ""),
-    )
 }
