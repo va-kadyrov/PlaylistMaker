@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,10 +27,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults.shape
 import androidx.compose.material3.Shapes
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.getValue
@@ -39,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
@@ -87,45 +92,50 @@ fun SearchScreen(
     clearTracksHistory: () -> Unit,
     searchFielsOnFocus: () -> Unit,
     openPlayer: (Track) -> Unit,
-    )
-
-{
+) {
     val trackState by observeTrackState.observeAsState()
     val trackHistoryState by observeTrackHistoryState.observeAsState()
 //    val restoredInputText by observeInputTextState.observeAsState()
 
-//    val focusManager = LocalFocusManager.current
-//    val keyboardController = LocalSoftwareKeyboardController.current
+    Surface(color = colorResource(R.color.settings_back)) {
 
-    Column {
+        Column {
 
-        TopBar()
+            TopBar()
 
-        SearchTextField(searchTextEntered, searchTextChanged)
+            SearchTextField(searchTextEntered, searchTextChanged)
 
-        when {
-            trackHistoryState == null -> {}
-            trackHistoryState!!.isVisible -> HistoryTracksList(
-                trackHistoryState!!.content, openPlayer,
-                clearTracksHistory
-            )
+            when {
+                trackHistoryState == null -> {}
+                trackHistoryState!!.isVisible -> HistoryTracksList(
+                    trackHistoryState!!.content, openPlayer,
+                    clearTracksHistory
+                )
 
-            trackState == null -> {}
-            trackState!!.isLoading -> MyProgressBar()
-            trackState!!.isEmpty -> NothingFound()
-            trackState!!.isError -> NetworkError(repeatSearch)
-            else -> TracksList(trackState!!.content, { track -> addTrackToHistory(track); openPlayer(track)})
+                trackState == null -> {}
+                trackState!!.isLoading -> MyProgressBar()
+                trackState!!.isEmpty -> NothingFound()
+                trackState!!.isError -> NetworkError(repeatSearch)
+                else -> TracksList(
+                    trackState!!.content,
+                    { track -> addTrackToHistory(track); openPlayer(track) })
+            }
         }
     }
 }
 
 @Composable
 private fun MyProgressBar(){
-    CircularProgressIndicator(
-        modifier = Modifier.width(64.dp),
-        color = MaterialTheme.colorScheme.secondary,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-    )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(44.dp),
+            color = colorResource(R.color.search_progress_bar),
+            strokeWidth = 4.dp
+        )
+    }
 }
 
 
@@ -189,17 +199,17 @@ private fun NoTracks(imageResource: Int, textResource: Int,
 private fun TopBar(){
     TopAppBar(
         title = {Text (text = stringResource(R.string.search_header))},
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .background(color = colorResource(R.color.search_btn_back))
+        modifier = Modifier.padding(bottom = 16.dp),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorResource(R.color.settings_back),
+            titleContentColor = colorResource(R.color.settings_text),
+        )
     )
-
 }
 
 
 @Composable
 private fun SearchTextField(
-//    restoredInputText: String,
     searchTextEntered: () -> Unit,
     searchTextChanged: (String) -> Unit,
 ) {
@@ -211,14 +221,19 @@ private fun SearchTextField(
 
         ) {
         OutlinedTextField(
-            shape = RoundedCornerShape(8.dp),
-//            colors = OutlinedTextFieldDefaults.colors(
-//                focusedBorderColor = Color.Transparent,
-//                unfocusedBorderColor = Color.Transparent
-//            ),
             modifier = Modifier
-                .background(color = colorResource(R.color.search_ev_back))
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clip(shape),
+            shape = RoundedCornerShape(8.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = colorResource(R.color.search_ev_back),
+                unfocusedContainerColor = colorResource(R.color.search_ev_back),
+
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                disabledBorderColor = Color.Transparent,
+            ),
+
             value = inputText.value,
             onValueChange = { newText -> inputText.value = newText; searchTextChanged(newText) },
             keyboardActions = KeyboardActions(
@@ -237,13 +252,16 @@ private fun SearchTextField(
             singleLine = true,
         )
 
-        IconButton(onClick = { inputText.value = ""; searchTextChanged(""); searchTextEntered(); },
-            modifier = Modifier.align(alignment = Alignment.CenterEnd)
-        )  {
-            Icon(
-                painter = painterResource(R.drawable.search_clear),
-                contentDescription = "Очистить"
-            )
+        if (inputText.value.isNotEmpty()) {
+            IconButton(
+                onClick = { inputText.value = ""; searchTextChanged(""); searchTextEntered(); },
+                modifier = Modifier.align(alignment = Alignment.CenterEnd)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.search_clear),
+                    contentDescription = "Очистить"
+                )
+            }
         }
     }
 }
